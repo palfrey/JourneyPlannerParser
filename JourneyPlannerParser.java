@@ -260,7 +260,7 @@ class Journey extends Vector<JourneySegment>
 {
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer("Journey -");
+		StringBuffer sb = new StringBuffer("Journey:");
 		for (int i=0;i<size();i++)
 		{
 			sb.append(String.format("\n\t- %s", get(i)));
