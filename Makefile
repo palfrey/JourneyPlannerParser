@@ -1,6 +1,5 @@
 all: JourneyPlannerParser.class
-	java JourneyPlannerParser jp-complete.html
+	java -ea JourneyPlannerParser
 
 JourneyPlannerParser.class: JourneyPlannerParser.java
-	javac $^
-
+	javac $^ -Xlint:unchecked
