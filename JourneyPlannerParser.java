@@ -500,14 +500,29 @@ class BufferedURLConnection
 
 enum LocationType
 {
-	Postcode,
-	Stop
+	Postcode("locator"),
+	Stop("stop"),
+	Address("address"),
+	PlaceOfInterest("poi");
+
+	private String tflname;
+
+	private LocationType(String tflname)
+	{
+		this.tflname = tflname;
+	}
+
+	public String getTFLName()
+	{
+		return tflname;
+	}
 }
+
 
 class JourneyLocation
 {
-	public LocationType type;
-	String data;
+	private LocationType type;
+	public String data;
 	
 	JourneyLocation(LocationType lt, String _data)
 	{
@@ -518,6 +533,11 @@ class JourneyLocation
 	static JourneyLocation postcode(String data)
 	{
 		return new JourneyLocation(LocationType.Postcode, data);
+	}
+
+	public String getTFLName()
+	{
+		return type.getTFLName();
 	}
 }
 
