@@ -149,7 +149,15 @@ class JourneyPlannerParser
 		if (debug)
 			System.out.println(sb.toString());
 
-		BufferedURLConnection buc = new BufferedURLConnection("http://journeyplanner.tfl.gov.uk/user/XSLT_TRIP_REQUEST2", sb.toString());
+		BufferedURLConnection buc = null;
+		try 
+		{
+			buc = new BufferedURLConnection("http://journeyplanner.tfl.gov.uk/user/XSLT_TRIP_REQUEST2", sb.toString());
+		}
+		catch (IOException e)
+		{
+			throw new ParseException("IOException trying to get data from TfL: "+e.getMessage());
+		}
 		if (debug)
 			System.out.println(buc.headers);
 
@@ -436,15 +444,23 @@ class BufferedURLConnection
 	public String outputData;
 	
 	@SuppressWarnings("unchecked") 	
-	public BufferedURLConnection(String url, String data)
+	public BufferedURLConnection(String url, String data) throws IOException
 	{
 		inputData = data;
 		filename = String.format("%d-%d.cache", url.hashCode(), inputData.hashCode());
 		if (new File(filename).exists())
 		{
 			ObjectInputStream rd = new ObjectInputStream(new FileInputStream(filename));
-			headers = (Map<String, List<String>>)rd.readObject();
-			outputData = (String)rd.readObject();
+			try
+			{
+				headers = (Map<String, List<String>>)rd.readObject();
+				outputData = (String)rd.readObject();
+			}
+			catch (ClassNotFoundException e)
+			{
+				/* really shouldn't happen, but re-throw just in case */
+				throw new IOException("ClassNotFoundException! That's pretty damn weird: "+e.getMessage());
+			}
 			buffered = true;
 			return;
 		}
@@ -476,7 +492,7 @@ class BufferedURLConnection
 		dumper.close();
 	}
 
-	public BufferedURLConnection(String url)
+	public BufferedURLConnection(String url) throws IOException
 	{
 		this(url, "");
 	}
