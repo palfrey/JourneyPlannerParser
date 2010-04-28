@@ -247,11 +247,18 @@ class JourneyPlannerParser
 									ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(len-2,len)));
 									js.time_end = ts.getTime();
 								}
-								//System.out.println(js);
+								else
+									js.time_start = (Date)j.last().time_end.clone();
 							}
 							else
 							{
-								//System.out.println("end of journey");
+								if (tdlist.group(1).indexOf(":")!=-1)
+								{
+									Calendar ts = (Calendar)base.clone();
+									ts.set(Calendar.HOUR_OF_DAY, Integer.parseInt(tdlist.group(1).substring(0,2)));
+									ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(3,5)));
+									j.last().time_end = ts.getTime();
+								}
 								end_of_journey = true;
 								j.corrections();
 								res.add(j);
@@ -412,7 +419,11 @@ class Journey extends Vector<JourneySegment>
 				get(i).loc_end = get(i+1).loc_start;
 		}
 	}
-
+	
+	public JourneySegment last()
+	{
+		return this.get(size()-1);
+	}
 }
 
 class BufferedURLConnection
