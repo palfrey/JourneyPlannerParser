@@ -56,7 +56,7 @@ class JourneyPlannerParser
 		walk_to = Pattern.compile("Walk to (.+?)<br");
 		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+?<br /><br />)<span class=\"zoneinfo\">(?:Z|z)one\\(s\\): ([\\d, ]+)</span>", Pattern.DOTALL);
 		tube_direct = Pattern.compile("<span class=\"\\S+\">(.+?)</span> towards (.+?)<br>");
-		bus_to = Pattern.compile("Take the Route Bus (N?\\d+) from Stop:  (\\S)<br[^>]*> towards (.+?)<br");
+		bus_to = Pattern.compile("Take the Route Bus ([A-Z\\d]+) from Stop:  (\\S)<br[^>]*> towards (.+?)<br");
 		transit_time = Pattern.compile("time: (\\d+) mins");
 		payonboard = Pattern.compile("<table cellspacing=\"0\".*?</table>");
 	}
