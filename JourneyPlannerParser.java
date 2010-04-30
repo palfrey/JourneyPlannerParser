@@ -56,7 +56,7 @@ class JourneyPlannerParser
 		walk_to = Pattern.compile("Walk to (.+?)<br");
 		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+?<br /><br />)<span class=\"zoneinfo\">(?:Z|z)one\\(s\\): ([\\d, ]+)</span>", Pattern.DOTALL);
 		tube_direct = Pattern.compile("<span class=\"\\S+\">(.+?)</span> towards (.+?)<br>");
-		bus_to = Pattern.compile("Take the Route (?:Express )?Bus ([A-Z\\d]+) from Stop:  ([\\S\\d]+)<br[^>]*> towards (.+?)<br");
+		bus_to = Pattern.compile("Route (?:Express )?Bus ([A-Z\\d]+) from Stop:  ([\\S\\d]+)<br[^>]*> towards (.+?)<br");
 		transit_time = Pattern.compile("time:\\s(\\d+).+?mins", Pattern.DOTALL);
 		payonboard = Pattern.compile("<table cellspacing=\"0\".*?</table>");
 	}
@@ -327,6 +327,7 @@ class JourneyPlannerParser
 										Route ro = new Route();
 										ro.thing = t2.group(1);
 										ro.towards = t2.group(2);
+										ro.stop = null;
 										js.routes.add(ro);
 									}
 									break;
@@ -334,11 +335,14 @@ class JourneyPlannerParser
 								case Bus:
 								{
 									Matcher b = bus_to.matcher(tdlist.group(1));
-									b.find();
-									Route ro = new Route();
-									ro.thing = b.group(1)+ " - "+b.group(2);
-									ro.towards = b.group(3);
-									js.routes.add(ro);
+									while (b.find())
+									{
+										Route ro = new Route();
+										ro.thing = b.group(1);
+										ro.stop = b.group(2);
+										ro.towards = b.group(3);
+										js.routes.add(ro);
+									}
 									break;
 								}
 							}
@@ -396,6 +400,7 @@ class Route
 {
 	public String thing;
 	public String towards;
+	public String stop;
 }
 
 enum Impediments
