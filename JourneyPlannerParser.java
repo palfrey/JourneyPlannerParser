@@ -344,8 +344,6 @@ class JourneyPlannerParser
 						}
 						case 2:
 						{
-							if (debug)
-								System.out.println(tdlist.group(1));
 							Matcher time = transit_time.matcher(tdlist.group(1));
 							time.find();
 							js.minutes = Integer.parseInt(time.group(1));
