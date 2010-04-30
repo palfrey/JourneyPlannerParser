@@ -271,7 +271,10 @@ class JourneyPlannerParser
 										j.last().time_end = (Date)js.time_start.clone();
 								}
 								else
-									js.time_start = (Date)j.last().time_end.clone();
+								{
+									if (j.last().time_end != null)
+										js.time_start = (Date)j.last().time_end.clone();
+								}
 							}
 							else
 							{
