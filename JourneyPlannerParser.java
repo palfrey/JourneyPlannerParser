@@ -45,13 +45,6 @@ class JourneyPlannerParser
 		tds = Pattern.compile("<td[^>]*?>(.*?)</td>", Pattern.DOTALL);
 		alt = Pattern.compile("alt=\"([^\"]+)\"");
 		departing = Pattern.compile("<strong>Departing:[^\n]+\n\\s+</strong>(\\S+)[^\n]*\n[^\n]*\n[^\\d]+(\\d+)[^\n]*\n\\s+(\\S+)\\s\n[^\n]*\n[^\\d]+(\\d+) at: (\\d+):(\\d+)</li>");
-/*<strong>Departing: 
-							</strong>Saturday 
-
-  17 
-    April
-
-   2010 at: 23:54 */
 		strip_link = Pattern.compile("<a href=\"[^\"]+\">([^<]+)</a>");
 		walk_to = Pattern.compile("Walk to (.+?)<br");
 		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+?<br /><br />)<span class=\"zoneinfo\">(?:Z|z)one\\(s\\): ([\\d, ]+)</span>", Pattern.DOTALL);
