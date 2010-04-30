@@ -428,7 +428,16 @@ class JourneySegment
 
 	public String toString()
 	{
-		return "JourneySegment - "+type.toString()+" : "+time_start.toString()+","+loc_start.toString()+" - "+time_end.toString()+","+loc_end.toString();
+		String rs = "";
+		for(Route r: routes)
+		{
+			if (r.stop != null)
+				rs += String.format("(%s @ stop %s towards %s)", r.thing, r.stop, r.towards);
+			else
+				rs += String.format("(%s towards %s)", r.thing, r.towards);
+		}
+		
+		return "JourneySegment - "+type.toString()+" : "+time_start.toString()+","+loc_start.toString()+" - "+time_end.toString()+","+loc_end.toString() + " - " + rs;
 	}
 }
 
