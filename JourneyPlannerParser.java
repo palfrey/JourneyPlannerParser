@@ -433,13 +433,17 @@ class JourneySegment
 		String rs = "";
 		for(Route r: routes)
 		{
+			if (rs != "")
+				rs += " ";
 			if (r.stop != null)
 				rs += String.format("(%s @ stop %s towards %s)", r.thing, r.stop, r.towards);
 			else
 				rs += String.format("(%s towards %s)", r.thing, r.towards);
 		}
 		
-		return "JourneySegment - "+type.toString()+" : "+time_start.toString()+","+loc_start.toString()+" - "+time_end.toString()+","+loc_end.toString() + " - " + rs;
+		if (rs != "")
+			rs = " - "+rs;
+		return String.format("JourneySegment - %s : %s,%s - %s,%s%s",type,time_start,loc_start,time_end,loc_end,rs);
 	}
 }
 
