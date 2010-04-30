@@ -266,6 +266,9 @@ class JourneyPlannerParser
 									ts.set(Calendar.HOUR_OF_DAY, hour);
 									ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(len-2,len)));
 									js.time_end = ts.getTime();
+
+									if (j.size()>0 && j.last().time_end == null)
+										j.last().time_end = (Date)js.time_start.clone();
 								}
 								else
 									js.time_start = (Date)j.last().time_end.clone();
@@ -414,8 +417,8 @@ class JourneySegment
 	JourneySegment()
 	{
 		loc_start = loc_end = "";
-		time_start = new Date();
-		time_end = new Date();
+		time_start = null;
+		time_end = null;
 	}
 
 	public String toString()
