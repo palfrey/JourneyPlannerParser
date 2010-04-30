@@ -246,12 +246,24 @@ class JourneyPlannerParser
 
 								if (tdlist.group(1).indexOf(":")!=-1)
 								{
-									Calendar ts = (Calendar)base.clone();
-									ts.set(Calendar.HOUR_OF_DAY, Integer.parseInt(tdlist.group(1).substring(0,2)));
+									if (debug)
+										System.out.println("time parse: "+tdlist.group(1));
+									Calendar ts = Calendar.getInstance();
+									ts.setTime(base.getTime());
+									int hour = Integer.parseInt(tdlist.group(1).substring(0,2));
+									if (hour<base.get(Calendar.HOUR_OF_DAY))
+										hour += 24;
+									ts.set(Calendar.HOUR_OF_DAY, hour);
 									ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(3,5)));
 									js.time_start = ts.getTime();
+									
+									ts = Calendar.getInstance();
+									ts.setTime(base.getTime());
 									int len = tdlist.group(1).length();
-									ts.set(Calendar.HOUR_OF_DAY, Integer.parseInt(tdlist.group(1).substring(len-5,len-3)));
+									hour = Integer.parseInt(tdlist.group(1).substring(len-5,len-3));
+									if (hour<base.get(Calendar.HOUR_OF_DAY))
+										hour += 24;
+									ts.set(Calendar.HOUR_OF_DAY, hour);
 									ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(len-2,len)));
 									js.time_end = ts.getTime();
 								}
@@ -262,8 +274,12 @@ class JourneyPlannerParser
 							{
 								if (tdlist.group(1).indexOf(":")!=-1)
 								{
-									Calendar ts = (Calendar)base.clone();
-									ts.set(Calendar.HOUR_OF_DAY, Integer.parseInt(tdlist.group(1).substring(0,2)));
+									Calendar ts = Calendar.getInstance();
+									ts.setTime(base.getTime());
+									int hour = Integer.parseInt(tdlist.group(1).substring(0,2));
+									if (hour<base.get(Calendar.HOUR_OF_DAY))
+										hour += 24;
+									ts.set(Calendar.HOUR_OF_DAY, hour);
 									ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(3,5)));
 									j.last().time_end = ts.getTime();
 								}
