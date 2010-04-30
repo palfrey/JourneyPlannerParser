@@ -55,7 +55,7 @@ class JourneyPlannerParser
 		strip_link = Pattern.compile("<a href=\"[^\"]+\">([^<]+)</a>");
 		walk_to = Pattern.compile("Walk to (.+?)<br");
 		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+?<br /><br />)<span class=\"zoneinfo\">(?:Z|z)one\\(s\\): ([\\d, ]+)</span>", Pattern.DOTALL);
-		tube_direct = Pattern.compile("<span class=\"\\S+\">(.+?)</span> towards (.+?)<br>");
+		tube_direct = Pattern.compile("<span class=\"[^\"]+\">([^<]+)</span> towards (.+?)<br");
 		bus_to = Pattern.compile("Route (?:Express )?Bus ([A-Z\\d]+) from Stop:  ([\\S\\d]+)<br[^>]*> towards (.+?)<br");
 		transit_time = Pattern.compile("time:\\s(\\d+).+?mins", Pattern.DOTALL);
 		payonboard = Pattern.compile("<table cellspacing=\"0\".*?</table>");
@@ -322,6 +322,8 @@ class JourneyPlannerParser
 									Matcher t = tube_to.matcher(tdlist.group(1));
 									t.find();
 									Matcher t2 = tube_direct.matcher(t.group(1));
+									if (debug)
+										System.out.println("Searching for tube from: "+t.group(1));
 									while (t2.find())
 									{
 										Route ro = new Route();
