@@ -16,7 +16,7 @@ class JourneyPlannerParser
 		{
 			JourneyPlannerParser jpp = new JourneyPlannerParser(false);
 			Vector<Journey> js;
-			js = jpp.doJourney(JourneyLocation.postcode("E3 4AE"),JourneyLocation.postcode("SW7 2AZ"), new JourneyParameters());
+			js = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), new JourneyParameters());
 			for (int i=0;i<js.size();i++)
 			{
 				System.out.println(i);
@@ -561,6 +561,11 @@ enum LocationType
 	{
 		return tflname;
 	}
+
+	public JourneyLocation create(String data)
+	{
+		return new JourneyLocation(this, data);
+	}
 }
 
 
@@ -573,11 +578,6 @@ class JourneyLocation
 	{
 		type = lt;
 		data = _data;
-	}
-
-	static JourneyLocation postcode(String data)
-	{
-		return new JourneyLocation(LocationType.Postcode, data);
 	}
 
 	public String getTFLName()
