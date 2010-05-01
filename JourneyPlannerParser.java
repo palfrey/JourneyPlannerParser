@@ -18,6 +18,7 @@ class JourneyPlannerParser
 			Vector<Journey> js;
 			JourneyParameters jp = new JourneyParameters();
 			jp.when = new Date(2010-1900, 4, 29, 10, 41);
+			jp.speed = Speed.fast;
 			js = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
 			for (int i=0;i<js.size();i++)
 			{
@@ -118,7 +119,7 @@ class JourneyPlannerParser
 		m.put("trITMOTvalue101","60");
 		m.put("trITMOTvalue","20");
 		m.put("trITMOT","100");
-		m.put("changeSpeed","normal");
+		m.put("changeSpeed",params.speed.toString());
 		m.put("tripSelection","on");
 		m.put("itdLPxx_view","detail");
 		m.put("ptOptionsActive","1");
@@ -595,13 +596,22 @@ class JourneyLocation
 	}
 }
 
+enum Speed
+{
+	normal,
+	fast,
+	slow
+}
+
 class JourneyParameters
 {
 	public Date when;
+	public Speed speed;
 
 	public JourneyParameters()
 	{
 		when = new Date();
+		speed = Speed.normal;
 	}
 }
 
