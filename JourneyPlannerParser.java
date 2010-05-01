@@ -100,7 +100,7 @@ class JourneyPlannerParser
 		m.put("itdTimeMinute",String.format("%02d", time.get(Calendar.MINUTE)));
 
 		m.put("Submit","Search");
-		m.put("routeType","LEASTTIME");
+		m.put("routeType",params.routeType.getDetails());
 		m.put("name_via","Enter location+%28optional%29");
 		m.put("nameState_via","notidentified");
 		m.put("nameDefaultText_via","Enter location+%28optional%29");
@@ -596,6 +596,25 @@ enum TimeType
 	}
 }
 
+enum RouteType
+{
+	LeastTime("LEASTTIME"),
+	LeastChanges("LEASTINTERCHANGE"),
+	LeastWalking("LEASTWALKING");
+
+	private String details;
+
+	private RouteType(String details)
+	{
+		this.details = details;
+	}
+
+	public String getDetails()
+	{
+		return details;
+	}
+}
+
 class JourneyLocation
 {
 	private LocationType type;
@@ -625,12 +644,14 @@ class JourneyParameters
 	public Date when;
 	public Speed speed;
 	public TimeType timeType;
+	public RouteType routeType;
 
 	public JourneyParameters()
 	{
 		when = new Date();
 		speed = Speed.normal;
 		timeType = TimeType.Depart;
+		routeType = RouteType.LeastTime;
 	}
 }
 
