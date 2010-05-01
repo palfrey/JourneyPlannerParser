@@ -14,9 +14,11 @@ class JourneyPlannerParser
 	{
 		try
 		{
-			JourneyPlannerParser jpp = new JourneyPlannerParser(false);
+			JourneyPlannerParser jpp = new JourneyPlannerParser(true);
 			Vector<Journey> js;
-			js = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), new JourneyParameters());
+			JourneyParameters jp = new JourneyParameters();
+			jp.when = new Date(2010-1900, 4, 29, 10, 41);
+			js = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
 			for (int i=0;i<js.size();i++)
 			{
 				System.out.println(i);
@@ -88,10 +90,14 @@ class JourneyPlannerParser
 		m.put("type_destination",end.getTFLName());
 		m.put("place_destination","London");
 		m.put("itdTripDateTimeDepArr","dep");
-		m.put("itdDateDay","17");
-		m.put("itdDateYearMonth","201004");
-		m.put("itdTimeHour","23");
-		m.put("itdTimeMinute","54");
+
+		Calendar time = new GregorianCalendar();
+		time.setTime(params.when);
+		m.put("itdDateDay",String.format("%2d", time.get(Calendar.DAY_OF_MONTH)));
+		m.put("itdDateYearMonth", String.format("%4d%02d", time.get(Calendar.YEAR),time.get(Calendar.MONTH)));
+		m.put("itdTimeHour",String.format("%02d", time.get(Calendar.HOUR_OF_DAY)));
+		m.put("itdTimeMinute",String.format("%02d", time.get(Calendar.MINUTE)));
+
 		m.put("Submit","Search");
 		m.put("routeType","LEASTTIME");
 		m.put("name_via","Enter location+%28optional%29");
@@ -591,6 +597,12 @@ class JourneyLocation
 
 class JourneyParameters
 {
+	public Date when;
+
+	public JourneyParameters()
+	{
+		when = new Date();
+	}
 }
 
 class ParseException extends Exception
