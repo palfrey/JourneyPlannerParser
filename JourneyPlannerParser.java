@@ -361,6 +361,8 @@ class JourneyPlannerParser
 									js.impediments.add(Impediments.StairsDown);
 								else if (alts.group(1).equals("lift up"))
 									js.impediments.add(Impediments.LiftUp);
+								else if (alts.group(1).equals("escalator up"))
+									js.impediments.add(Impediments.EscalatorUp);
 								else
 									throw new ParseException("Unknown impediment type: "+alts.group(1));
 							}
@@ -405,7 +407,8 @@ enum Impediments
 {
 	StairsUp,
 	StairsDown,
-	LiftUp
+	LiftUp,
+	EscalatorUp
 }
 
 class JourneySegment
