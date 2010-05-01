@@ -90,7 +90,7 @@ class JourneyPlannerParser
 		m.put("nameDefaultText_destination","end");
 		m.put("type_destination",end.getTFLName());
 		m.put("place_destination","London");
-		m.put("itdTripDateTimeDepArr","dep");
+		m.put("itdTripDateTimeDepArr",params.timeType.getDetails());
 
 		Calendar time = new GregorianCalendar();
 		time.setTime(params.when);
@@ -578,6 +578,23 @@ enum LocationType
 	}
 }
 
+enum TimeType
+{
+	Depart("dep"),
+	Arrive("arr");
+
+	private String details;
+
+	private TimeType(String details)
+	{
+		this.details = details;
+	}
+
+	public String getDetails()
+	{
+		return details;
+	}
+}
 
 class JourneyLocation
 {
@@ -607,11 +624,13 @@ class JourneyParameters
 {
 	public Date when;
 	public Speed speed;
+	public TimeType timeType;
 
 	public JourneyParameters()
 	{
 		when = new Date();
 		speed = Speed.normal;
+		timeType = TimeType.Depart;
 	}
 }
 
