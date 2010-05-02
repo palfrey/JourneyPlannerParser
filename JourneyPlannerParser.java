@@ -259,16 +259,23 @@ class JourneyPlannerParser
 									
 									ts = Calendar.getInstance();
 									ts.setTime(base.getTime());
-									int len = tdlist.group(1).length();
-									hour = Integer.parseInt(tdlist.group(1).substring(len-5,len-3));
-									if (hour<base.get(Calendar.HOUR_OF_DAY))
-										hour += 24;
-									ts.set(Calendar.HOUR_OF_DAY, hour);
-									ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(len-2,len)));
-									js.time_end = ts.getTime();
+									try
+									{
+										int len = tdlist.group(1).length();
+										hour = Integer.parseInt(tdlist.group(1).substring(len-5,len-3));
+										if (hour<base.get(Calendar.HOUR_OF_DAY))
+											hour += 24;
+										ts.set(Calendar.HOUR_OF_DAY, hour);
+										ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(len-2,len)));
+										js.time_end = ts.getTime();
 
-									if (j.size()>0 && j.last().time_end == null)
-										j.last().time_end = (Date)js.time_start.clone();
+										if (j.size()>0 && j.last().time_end == null)
+											j.last().time_end = (Date)js.time_start.clone();
+									}
+									catch (NumberFormatException e)
+									{
+										assert tdlist.group(1).substring(5).indexOf(":")==-1;
+									}
 								}
 								else
 								{
