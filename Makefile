@@ -1,8 +1,11 @@
-all: src/net/tevp/JourneyPlannerParser/*.class
+JAVAFILES=$(wildcard src/net/tevp/JourneyPlannerParser/*.java)
+CLASSFILES=$(patsubst %.java,%.class,$(JAVAFILES))
+
+all: $(CLASSFILES)
 	java -ea -cp src net.tevp.JourneyPlannerParser.JourneyPlannerParser
 
-src/net/tevp/JourneyPlannerParser/*.class: src/net/tevp/JourneyPlannerParser/*.java
-	javac -d src src/net/tevp/JourneyPlannerParser/*.java -Xlint:unchecked
+$(CLASSFILES): $(JAVAFILES)
+	javac -d src $(JAVAFILES) -Xlint:unchecked
 
 doc::
-	javadoc *.java
+	javadoc -d doc $(JAVAFILES)
