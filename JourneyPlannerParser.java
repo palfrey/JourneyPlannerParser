@@ -28,6 +28,12 @@ class JourneyPlannerParser
 			}
 			assert js.size()!=0;
 		}
+		catch (AmbiguousLocationException e)
+		{
+			System.out.println(e.original);
+			System.out.println(e.options);
+			e.printStackTrace();
+		}
 		catch (ParseException e)
 		{
 			e.printStackTrace();
@@ -37,6 +43,7 @@ class JourneyPlannerParser
 	Pattern route, tds, alt, departing, strip_link;
 	Pattern walk_to, tube_to, tube_direct, bus_to;
 	Pattern transit_time, payonboard;
+	Pattern fieldset, legend, option;
 
 	boolean debug;
 
@@ -55,6 +62,10 @@ class JourneyPlannerParser
 		bus_to = Pattern.compile("Route (?:Express )?Bus ([A-Z\\d]+) from Stop:  ([\\S\\d]+)<br[^>]*> towards (.+?)<br");
 		transit_time = Pattern.compile("time:\\s(\\d+).+?mins", Pattern.DOTALL);
 		payonboard = Pattern.compile("<table cellspacing=\"0\".*?</table>");
+
+		fieldset = Pattern.compile("<fieldset(.*?)</fieldset>", Pattern.DOTALL);
+		legend = Pattern.compile("<legend>(.*?)</legend>");
+		option = Pattern.compile("<option[^>]+>(.*?)</option>");
 	}
 
 	Vector<Journey> doJourney(JourneyLocation start, JourneyLocation end, JourneyParameters params) throws ParseException
@@ -179,15 +190,50 @@ class JourneyPlannerParser
 			}
 		}
 
-		return parseString(buc.outputData);
+		return parseString(start,end,buc.outputData);
 	}
 
 	Vector<Journey> parseString(String data) throws ParseException
 	{
+		return parseString(null, null, data);
+	}
+
+	Vector<Journey> parseString(JourneyLocation start, JourneyLocation end, String data) throws ParseException
+	{
 		Vector<Journey> res = new Vector<Journey>();
 		
 		Matcher d = departing.matcher(data);
-		d.find();
+		if (!d.find())
+		{
+			Matcher field = fieldset.matcher(data);
+			if (field.find())
+			{
+				AmbiguousLocationException ale = new AmbiguousLocationException();
+				Matcher leg = legend.matcher(field.group(1));
+				if (leg.find())
+				{
+					if (leg.group(1).compareTo("From")==0)
+						ale.original = start;
+					else if (leg.group(1).compareTo("Travelling to...")==0)
+						ale.original = end;
+					else
+						throw new ParseException(leg.group(1));
+				}
+				else
+					throw new ParseException(field.group(1));
+
+				Matcher opts = option.matcher(field.group(1));
+				ale.options = new Vector<String>();
+				while (opts.find())
+				{
+					ale.options.add(opts.group(1));
+				}
+				if (ale.options.size()==0)
+					throw new ParseException(field.group(1));
+					
+				throw ale;
+			}
+		}
 		//System.out.println(d.group(0));
 
 		Calendar base = new GregorianCalendar();
@@ -665,4 +711,11 @@ class JourneyParameters
 class ParseException extends Exception
 {
 	ParseException(String msg) {super(msg);}
+}
+
+class AmbiguousLocationException extends ParseException
+{
+	public Vector<String> options;
+	public JourneyLocation original;
+	AmbiguousLocationException() {super("Ambiguous location specified!");}
 }
