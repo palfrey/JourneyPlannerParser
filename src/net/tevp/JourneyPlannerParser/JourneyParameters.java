@@ -8,6 +8,7 @@ public class JourneyParameters
 	public Speed speed;
 	public TimeType timeType;
 	public RouteType routeType;
+	public JourneyLocation via;
 
 	public JourneyParameters()
 	{
@@ -15,6 +16,7 @@ public class JourneyParameters
 		speed = Speed.normal;
 		timeType = TimeType.Depart;
 		routeType = RouteType.LeastTime;
+		via = null;
 	}
 }
 

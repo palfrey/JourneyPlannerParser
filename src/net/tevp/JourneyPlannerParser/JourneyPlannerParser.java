@@ -114,10 +114,18 @@ public class JourneyPlannerParser
 
 		m.put("Submit","Search");
 		m.put("routeType",params.routeType.getDetails());
-		m.put("name_via","Enter location+%28optional%29");
-		m.put("nameState_via","notidentified");
 		m.put("nameDefaultText_via","Enter location+%28optional%29");
-		m.put("type_via","stop");
+		m.put("nameState_via","notidentified");
+		if (params.via == null)
+		{
+			m.put("name_via","Enter location+%28optional%29");
+			m.put("type_via","stop");
+		}
+		else
+		{
+			m.put("name_via",params.via.data);
+			m.put("type_via",params.via.getTFLName());
+		}
 		m.put("place_via","London");
 		m.put("placeDefaultText_via","London");
 		m.put("includedMeans","checkbox");
