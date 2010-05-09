@@ -1,14 +1,14 @@
+package net.tevp.JourneyPlannerParser;
+
 import java.util.regex.*;
 import java.io.*;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.text.DateFormatSymbols;
 import java.util.*;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 
-class JourneyPlannerParser
+public class JourneyPlannerParser
 {
 	public static void main(String [] args)
 	{
@@ -17,9 +17,11 @@ class JourneyPlannerParser
 			JourneyPlannerParser jpp = new JourneyPlannerParser(true);
 			Vector<Journey> js;
 			JourneyParameters jp = new JourneyParameters();
-			jp.when = new Date(2010-1900, 4, 29, 10, 41);
+			jp.when = new Date(2010-1900, 5, 10, 0, 23);
 			jp.speed = Speed.fast;
-			js = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
+			//js = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
+			js = jpp.doJourney(LocationType.Stop.create("Kings Cross Rail Station"),LocationType.Postcode.create("E8 1JH"), jp);
+			//js = jpp.doJourney(LocationType.Stop.create("Kings Cross"),LocationType.Postcode.create("E8 1JH"), jp);
 			for (int i=0;i<js.size();i++)
 			{
 				System.out.println(i);
@@ -47,7 +49,7 @@ class JourneyPlannerParser
 
 	boolean debug;
 
-	JourneyPlannerParser(boolean _debug)
+	public JourneyPlannerParser(boolean _debug)
 	{
 		debug = _debug;
 
@@ -68,7 +70,7 @@ class JourneyPlannerParser
 		option = Pattern.compile("<option[^>]+>(.*?)</option>");
 	}
 
-	Vector<Journey> doJourney(JourneyLocation start, JourneyLocation end, JourneyParameters params) throws ParseException
+	public Vector<Journey> doJourney(JourneyLocation start, JourneyLocation end, JourneyParameters params) throws ParseException
 	{
 		HashMap<String,String> m = new HashMap<String,String>();
 		m.put("language","en");
@@ -193,12 +195,12 @@ class JourneyPlannerParser
 		return parseString(start,end,buc.outputData);
 	}
 
-	Vector<Journey> parseString(String data) throws ParseException
+	public Vector<Journey> parseString(String data) throws ParseException
 	{
 		return parseString(null, null, data);
 	}
 
-	Vector<Journey> parseString(JourneyLocation start, JourneyLocation end, String data) throws ParseException
+	public Vector<Journey> parseString(JourneyLocation start, JourneyLocation end, String data) throws ParseException
 	{
 		Vector<Journey> res = new Vector<Journey>();
 		
@@ -446,276 +448,4 @@ class JourneyPlannerParser
 	}
 }
 
-enum TransportType
-{
-	Walk,
-	Bus,
-	Tube,
-	Tram,
-	DLR,
-	Overground
-}
 
-class Route
-{
-	public String thing;
-	public String towards;
-	public String stop;
-}
-
-enum Impediments
-{
-	StairsUp,
-	StairsDown,
-	LiftUp,
-	EscalatorUp
-}
-
-class JourneySegment
-{
-	public TransportType type;
-	public Date time_start, time_end;
-	public String loc_start, loc_end;
-	public Vector<Route> routes = new Vector<Route>();
-	public int minutes;
-	public Vector<Impediments> impediments = new Vector<Impediments>();
-
-	JourneySegment()
-	{
-		loc_start = loc_end = "";
-		time_start = null;
-		time_end = null;
-	}
-
-	public String toString()
-	{
-		String rs = "";
-		for(Route r: routes)
-		{
-			if (rs != "")
-				rs += " ";
-			if (r.stop != null)
-				rs += String.format("(%s @ stop %s towards %s)", r.thing, r.stop, r.towards);
-			else
-				rs += String.format("(%s towards %s)", r.thing, r.towards);
-		}
-		
-		if (rs != "")
-			rs = " - "+rs;
-		return String.format("JourneySegment - %s : %s,%s - %s,%s%s",type,time_start,loc_start,time_end,loc_end,rs);
-	}
-}
-
-class Journey extends Vector<JourneySegment>
-{
-	public String toString()
-	{
-		StringBuffer sb = new StringBuffer("Journey:");
-		for (int i=0;i<size();i++)
-		{
-			sb.append(String.format("\n\t- %s", get(i)));
-		}
-		return sb.toString();
-	}
-
-	public void corrections()
-	{
-		for (int i=0;i<size();i++)
-		{
-			if (i!=size()-1 && get(i).loc_end == "")
-				get(i).loc_end = get(i+1).loc_start;
-			if (get(i).time_start == null && get(i).time_end!= null && get(i).minutes != 0)
-			{
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(get(i).time_end);
-				cal.set(Calendar.MINUTE, cal.get(Calendar.MINUTE) - get(i).minutes);
-				get(i).time_start = cal.getTime();
-			}
-			if (i!=0 && get(i-1).time_end == null)
-				get(i-1).time_end = (Date)get(i).time_start.clone();
-		}
-	}
-	
-	public JourneySegment last()
-	{
-		return this.get(size()-1);
-	}
-}
-
-class BufferedURLConnection
-{
-	boolean buffered;
-	String inputData, filename;
-	URLConnection uc = null;
-	
-	public Map<String, List<String>> headers;
-	public String outputData;
-	
-	@SuppressWarnings("unchecked") 	
-	public BufferedURLConnection(String url, String data) throws IOException
-	{
-		inputData = data;
-		filename = String.format("%d-%d.cache", url.hashCode(), inputData.hashCode());
-		if (new File(filename).exists())
-		{
-			ObjectInputStream rd = new ObjectInputStream(new FileInputStream(filename));
-			try
-			{
-				headers = (Map<String, List<String>>)rd.readObject();
-				outputData = (String)rd.readObject();
-			}
-			catch (ClassNotFoundException e)
-			{
-				/* really shouldn't happen, but re-throw just in case */
-				throw new IOException("ClassNotFoundException! That's pretty damn weird: "+e.getMessage());
-			}
-			buffered = true;
-			return;
-		}
-		uc = new URL(url).openConnection();
-		if (inputData != "")
-		{
-			uc.setDoOutput(true);
-			OutputStreamWriter wr = new OutputStreamWriter(uc.getOutputStream());
-			wr.write(inputData);
-			wr.flush();
-		}
-		buffered = false;
-		headers = uc.getHeaderFields();
-
-		outputData = "";
-		InputStream is = uc.getInputStream();
-		while (true)
-		{
-			byte[] buffer = new byte[1024];
-			int bytes = is.read(buffer, 0, 1024);
-			if (bytes == -1)
-				break;
-			outputData += new String(buffer, 0, bytes);
-		}
-
-		ObjectOutputStream dumper = new ObjectOutputStream(new FileOutputStream(filename));
-		dumper.writeObject(headers);
-		dumper.writeObject(outputData);
-		dumper.close();
-	}
-
-	public BufferedURLConnection(String url) throws IOException
-	{
-		this(url, "");
-	}
-}
-
-enum LocationType
-{
-	Postcode("locator"),
-	Stop("stop"),
-	Address("address"),
-	PlaceOfInterest("poi");
-
-	private String tflname;
-
-	private LocationType(String tflname)
-	{
-		this.tflname = tflname;
-	}
-
-	public String getTFLName()
-	{
-		return tflname;
-	}
-
-	public JourneyLocation create(String data)
-	{
-		return new JourneyLocation(this, data);
-	}
-}
-
-enum TimeType
-{
-	Depart("dep"),
-	Arrive("arr");
-
-	private String details;
-
-	private TimeType(String details)
-	{
-		this.details = details;
-	}
-
-	public String getDetails()
-	{
-		return details;
-	}
-}
-
-enum RouteType
-{
-	LeastTime("LEASTTIME"),
-	LeastChanges("LEASTINTERCHANGE"),
-	LeastWalking("LEASTWALKING");
-
-	private String details;
-
-	private RouteType(String details)
-	{
-		this.details = details;
-	}
-
-	public String getDetails()
-	{
-		return details;
-	}
-}
-
-class JourneyLocation
-{
-	private LocationType type;
-	public String data;
-	
-	JourneyLocation(LocationType lt, String _data)
-	{
-		type = lt;
-		data = _data;
-	}
-
-	public String getTFLName()
-	{
-		return type.getTFLName();
-	}
-}
-
-enum Speed
-{
-	normal,
-	fast,
-	slow
-}
-
-class JourneyParameters
-{
-	public Date when;
-	public Speed speed;
-	public TimeType timeType;
-	public RouteType routeType;
-
-	public JourneyParameters()
-	{
-		when = new Date();
-		speed = Speed.normal;
-		timeType = TimeType.Depart;
-		routeType = RouteType.LeastTime;
-	}
-}
-
-class ParseException extends Exception
-{
-	ParseException(String msg) {super(msg);}
-}
-
-class AmbiguousLocationException extends ParseException
-{
-	public Vector<String> options;
-	public JourneyLocation original;
-	AmbiguousLocationException() {super("Ambiguous location specified!");}
-}

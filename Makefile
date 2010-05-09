@@ -1,5 +1,8 @@
-all: JourneyPlannerParser.class
-	java -ea JourneyPlannerParser
+all: src/net/tevp/JourneyPlannerParser/*.class
+	java -ea -cp src net.tevp.JourneyPlannerParser.JourneyPlannerParser
 
-JourneyPlannerParser.class: JourneyPlannerParser.java
-	javac $^ -Xlint:unchecked
+src/net/tevp/JourneyPlannerParser/*.class: src/net/tevp/JourneyPlannerParser/*.java
+	javac -d src src/net/tevp/JourneyPlannerParser/*.java -Xlint:unchecked
+
+doc::
+	javadoc *.java
