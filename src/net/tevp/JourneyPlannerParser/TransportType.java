@@ -6,5 +6,6 @@ public enum TransportType
 	Tube,
 	Tram,
 	DLR,
-	Overground
+	Overground,
+	Rail
 }

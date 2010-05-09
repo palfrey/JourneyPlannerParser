@@ -43,7 +43,7 @@ public class JourneyPlannerParser
 	}
 
 	Pattern route, tds, alt, departing, strip_link;
-	Pattern walk_to, tube_to, tube_direct, bus_to;
+	Pattern walk_to, tube_to, tube_direct, bus_to, rail_to;
 	Pattern transit_time, payonboard;
 	Pattern fieldset, legend, option;
 
@@ -62,6 +62,7 @@ public class JourneyPlannerParser
 		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+?<br /><br />)<span class=\"zoneinfo\">(?:Z|z)one\\(s\\): ([\\d, ]+)</span>", Pattern.DOTALL);
 		tube_direct = Pattern.compile("<span class=\"[^\"]+\">([^<]+)</span> towards (.+?)<br");
 		bus_to = Pattern.compile("Route (?:Express )?Bus ([A-Z\\d]+) from Stop:  ([\\S\\d]+)<br[^>]*> towards (.+?)<br");
+		rail_to = Pattern.compile("Take.+?<b>([^<]+)</b> towards ([^<]+)<br", Pattern.DOTALL);
 		transit_time = Pattern.compile("time:\\s(\\d+).+?mins", Pattern.DOTALL);
 		payonboard = Pattern.compile("<table cellspacing=\"0\".*?</table>");
 
@@ -297,6 +298,8 @@ public class JourneyPlannerParser
 									js.type = TransportType.Tube;
 								else if (a.group(1).equals("Bus"))
 									js.type = TransportType.Bus;
+								else if (a.group(1).equals("Rail"))
+									js.type = TransportType.Rail;
 								else
 									throw new ParseException("Unknown transit type: "+a.group(1));
 
@@ -360,11 +363,6 @@ public class JourneyPlannerParser
 						}
 						case 1:
 						{
-							if (debug)
-							{
-								System.out.println("");
-								System.out.println(tdlist.group(1));
-							}
 							String segment = tdlist.group(1);
 							segment = segment.substring(0,segment.indexOf("<br"));
 							if (segment.indexOf("<a")!=-1)
@@ -411,8 +409,24 @@ public class JourneyPlannerParser
 										ro.towards = b.group(3);
 										js.routes.add(ro);
 									}
+									assert js.routes.size()>0;
 									break;
 								}
+								case Rail:
+								{
+									Matcher ra = rail_to.matcher(tdlist.group(1));
+									while (ra.find())
+									{
+										Route ro = new Route();
+										ro.thing = ra.group(1);
+										ro.towards = ra.group(2);
+										js.routes.add(ro);
+									}
+									assert js.routes.size()>0;
+									break;
+								}
+								default:
+									throw new ParseException(tdlist.group(1));
 							}
 							//System.out.println(js);
 							break;
