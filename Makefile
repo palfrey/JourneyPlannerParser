@@ -4,8 +4,8 @@ CLASSFILES=$(patsubst %.java,%.class,$(JAVAFILES))
 all: $(CLASSFILES)
 	java -ea -cp src net.tevp.JourneyPlannerParser.JourneyPlannerParser
 
-$(CLASSFILES): $(JAVAFILES)
-	javac -d src $(JAVAFILES) -Xlint:unchecked
+$(CLASSFILES): $(JAVAFILES) Makefile
+	javac -d src $(JAVAFILES) -Xlint:unchecked -Xlint:deprecation
 
 doc::
 	javadoc -d doc $(JAVAFILES)
