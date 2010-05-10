@@ -10,6 +10,8 @@ public class JourneyParameters
 	public RouteType routeType;
 	public JourneyLocation via;
 
+	public boolean useRail, useDLR, useTube, useTram, useBus, useCoach, useRiver;
+
 	public JourneyParameters()
 	{
 		when = new Date();
@@ -17,6 +19,7 @@ public class JourneyParameters
 		timeType = TimeType.Depart;
 		routeType = RouteType.LeastTime;
 		via = null;
+		useRail = useDLR = useTube = useTram = useBus = useCoach = useRiver = true;
 	}
 }
 
