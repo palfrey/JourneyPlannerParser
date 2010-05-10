@@ -46,6 +46,7 @@ public class JourneyPlannerParser
 	Pattern walk_to, tube_to, tube_direct, bus_to, rail_to;
 	Pattern transit_time, payonboard;
 	Pattern fieldset, legend, option;
+	Pattern tflerror;
 
 	boolean debug;
 
@@ -69,6 +70,9 @@ public class JourneyPlannerParser
 		fieldset = Pattern.compile("<fieldset(.*?)</fieldset>", Pattern.DOTALL);
 		legend = Pattern.compile("<legend>(.*?)</legend>");
 		option = Pattern.compile("<option[^>]+>(.*?)</option>");
+			
+		tflerror = Pattern.compile("<p class=\"routealert-red-full\">([^<]+)</p>");
+	
 	}
 
 	public Vector<Journey> doJourney(JourneyLocation start, JourneyLocation end, JourneyParameters params) throws ParseException
@@ -211,6 +215,10 @@ public class JourneyPlannerParser
 
 	public Vector<Journey> parseString(JourneyLocation start, JourneyLocation end, String data) throws ParseException
 	{
+		Matcher error = tflerror.matcher(data);
+		if (error.find())
+			throw new TFLRequestException(error.group(1));
+		
 		Vector<Journey> res = new Vector<Journey>();
 		
 		Matcher d = departing.matcher(data);
