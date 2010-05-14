@@ -17,7 +17,7 @@ public class JourneyPlannerParser
 			JourneyPlannerParser jpp = new JourneyPlannerParser(true);
 			Vector<Journey> js;
 			JourneyParameters jp = new JourneyParameters();
-			jp.when = new GregorianCalendar(2010-1900, 5, 10, 0, 23).getTime();
+			jp.when = new GregorianCalendar(2010, 5, 10, 0, 23).getTime();
 			jp.speed = Speed.fast;
 			//js = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
 			js = jpp.doJourney(LocationType.Stop.create("Kings Cross Rail Station"),LocationType.Postcode.create("E8 1JH"), jp);
