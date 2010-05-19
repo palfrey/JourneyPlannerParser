@@ -455,6 +455,10 @@ public class JourneyPlannerParser
 									js.impediments.add(Impediments.LiftUp);
 								else if (alts.group(1).equals("escalator up"))
 									js.impediments.add(Impediments.EscalatorUp);
+								else if (alts.group(1).equals("escalator down"))
+									js.impediments.add(Impediments.EscalatorDown);
+								else if (alts.group(1).equals("ramp down"))
+									js.impediments.add(Impediments.RampDown);
 								else
 									throw new ParseException("Unknown impediment type: "+alts.group(1));
 							}
