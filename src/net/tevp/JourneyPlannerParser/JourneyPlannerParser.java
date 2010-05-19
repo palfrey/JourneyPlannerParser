@@ -42,7 +42,7 @@ public class JourneyPlannerParser
 		}
 	}
 
-	Pattern route, tds, alt, departing, strip_link;
+	Pattern route, tds, alt, motion, strip_link;
 	Pattern walk_to, tube_to, tube_direct, bus_to, rail_to;
 	Pattern transit_time, payonboard;
 	Pattern fieldset, legend, option;
@@ -57,7 +57,7 @@ public class JourneyPlannerParser
 		route = Pattern.compile("<table class=\"routedetails\">(.+?)</table>", Pattern.DOTALL);
 		tds = Pattern.compile("<td[^>]*?>(.*?)</td>", Pattern.DOTALL);
 		alt = Pattern.compile("alt=\"([^\"]+)\"");
-		departing = Pattern.compile("<strong>Departing:[^\n]+\n\\s+</strong>(\\S+)[^\n]*\n[^\n]*\n[^\\d]+(\\d+)[^\n]*\n\\s+(\\S+)\\s\n[^\n]*\n[^\\d]+(\\d+) at: (\\d+):(\\d+)</li>");
+		motion = Pattern.compile("<strong>(?:Departing|Arriving):[^\n]+\n\\s+</strong>(\\S+)[^\n]*\n[^\n]*\n[^\\d]+(\\d+)[^\n]*\n\\s+(\\S+)\\s\n[^\n]*\n[^\\d]+(\\d+) at: (\\d+):(\\d+)</li>");
 		strip_link = Pattern.compile("<a href=\"[^\"]+\">([^<]+)</a>");
 		walk_to = Pattern.compile("Walk to (.+?)<br");
 		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+?<br /><br />)<span class=\"zoneinfo\">(?:Z|z)one\\(s\\): ([\\d, ]+)</span>", Pattern.DOTALL);
@@ -221,7 +221,7 @@ public class JourneyPlannerParser
 		
 		Vector<Journey> res = new Vector<Journey>();
 		
-		Matcher d = departing.matcher(data);
+		Matcher d = motion.matcher(data);
 		if (!d.find())
 		{
 			Matcher field = fieldset.matcher(data);
