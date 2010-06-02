@@ -197,7 +197,9 @@ public class JourneyPlannerParser
 		}
 		catch (IOException e)
 		{
-			throw new ParseException("IOException trying to get data from TfL: "+e.getMessage());
+			ParseException pe = new ParseException("IOException trying to get data from TfL: "+e.getMessage());
+			pe.initCause(e);
+			throw pe;
 		}
 		if (debug)
 			System.out.println(buc.headers);
