@@ -1,11 +1,16 @@
-JAVAFILES=$(wildcard src/net/tevp/JourneyPlannerParser/*.java)
-CLASSFILES=$(patsubst %.java,%.class,$(JAVAFILES))
+SOURCE_FILES=$(wildcard src/net/tevp/JourneyPlannerParser/*.java)
 
-all: $(CLASSFILES)
-	java -ea -cp src net.tevp.JourneyPlannerParser.JourneyPlannerParser
+# This should be the Android SDK root directory
+ANDROID ?= ../../../android-sdk-linux_86
 
-$(CLASSFILES): $(JAVAFILES) Makefile
-	javac -d src $(JAVAFILES) -Xlint:unchecked -Xlint:deprecation
+# SDK version
+ANDROID_VERSION=1.5
+
+.PHONY: first
+first: bin-stamp
+	java -ea -cp bin net.tevp.JourneyPlannerParser.JourneyPlannerParser
 
 doc::
 	javadoc -d doc $(JAVAFILES)
+
+include Makefile.common
