@@ -14,8 +14,13 @@ class BufferedURLConnection
 	public Map<String, List<String>> headers;
 	public String outputData;
 	
-	@SuppressWarnings("unchecked") 	
 	public BufferedURLConnection(String url, String data) throws IOException
+	{
+		this(url,data,true);
+	}
+
+	@SuppressWarnings("unchecked") 	
+	public BufferedURLConnection(String url, String data, boolean cache) throws IOException
 	{
 		inputData = data;
 		filename = String.format("%d-%d.cache", url.hashCode(), inputData.hashCode());
@@ -57,10 +62,13 @@ class BufferedURLConnection
 			outputData += new String(buffer, 0, bytes);
 		}
 
-		ObjectOutputStream dumper = new ObjectOutputStream(new FileOutputStream(filename));
-		dumper.writeObject(headers);
-		dumper.writeObject(outputData);
-		dumper.close();
+		if (cache)
+		{
+			ObjectOutputStream dumper = new ObjectOutputStream(new FileOutputStream(filename));
+			dumper.writeObject(headers);
+			dumper.writeObject(outputData);
+			dumper.close();
+		}
 	}
 
 	public BufferedURLConnection(String url) throws IOException

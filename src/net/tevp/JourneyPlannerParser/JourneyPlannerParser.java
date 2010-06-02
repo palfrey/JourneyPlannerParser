@@ -193,7 +193,7 @@ public class JourneyPlannerParser
 		BufferedURLConnection buc = null;
 		try 
 		{
-			buc = new BufferedURLConnection("http://journeyplanner.tfl.gov.uk/user/XSLT_TRIP_REQUEST2", sb.toString());
+			buc = new BufferedURLConnection("http://journeyplanner.tfl.gov.uk/user/XSLT_TRIP_REQUEST2", sb.toString(), debug);
 		}
 		catch (IOException e)
 		{
