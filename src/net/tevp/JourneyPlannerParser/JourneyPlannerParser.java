@@ -77,6 +77,21 @@ public class JourneyPlannerParser
 
 	public Vector<Journey> doJourney(JourneyLocation start, JourneyLocation end, JourneyParameters params) throws ParseException
 	{
+		return runAsyncJourney(doAsyncJourney(start,end,params));
+	}
+
+	public JourneyQuery doAsyncJourney(JourneyLocation start, JourneyLocation end, JourneyParameters params)
+	{
+		JourneyQuery jq = new JourneyQuery();
+		jq.start = start;
+		jq.end = end;
+		jq.params = params;
+		jq.jpp = this;
+		return jq;	
+	}
+
+	protected Vector<Journey> runAsyncJourney(JourneyQuery jq) throws ParseException
+	{
 		HashMap<String,String> m = new HashMap<String,String>();
 		m.put("language","en");
 		m.put("sessionID","0");
@@ -98,54 +113,54 @@ public class JourneyPlannerParser
 		m.put("imageWidth","705");
 		m.put("imageHeight","500");
 		m.put("calculateCO2","1");
-		m.put("name_origin",start.data);
+		m.put("name_origin",jq.start.data);
 		m.put("nameState_origin","notidentified");
 		m.put("nameDefaultText_origin","start");
 		m.put("place_origin","London");
-		m.put("type_origin",start.getTFLName());
-		m.put("name_destination",end.data);
+		m.put("type_origin",jq.start.getTFLName());
+		m.put("name_destination",jq.end.data);
 		m.put("nameState_destination","notidentified");
 		m.put("nameDefaultText_destination","end");
-		m.put("type_destination",end.getTFLName());
+		m.put("type_destination",jq.end.getTFLName());
 		m.put("place_destination","London");
-		m.put("itdTripDateTimeDepArr",params.timeType.getDetails());
+		m.put("itdTripDateTimeDepArr",jq.params.timeType.getDetails());
 
 		Calendar time = new GregorianCalendar();
-		time.setTime(params.when);
+		time.setTime(jq.params.when);
 		m.put("itdDateDay",String.format("%02d", time.get(Calendar.DAY_OF_MONTH)));
 		m.put("itdDateYearMonth", String.format("%4d%02d", time.get(Calendar.YEAR),time.get(Calendar.MONTH)));
 		m.put("itdTimeHour",String.format("%02d", time.get(Calendar.HOUR_OF_DAY)));
 		m.put("itdTimeMinute",String.format("%02d", time.get(Calendar.MINUTE)));
 
 		m.put("Submit","Search");
-		m.put("routeType",params.routeType.getDetails());
+		m.put("routeType",jq.params.routeType.getDetails());
 		m.put("nameDefaultText_via","Enter location+%28optional%29");
 		m.put("nameState_via","notidentified");
-		if (params.via == null)
+		if (jq.params.via == null)
 		{
 			m.put("name_via","Enter location+%28optional%29");
 			m.put("type_via","stop");
 		}
 		else
 		{
-			m.put("name_via",params.via.data);
-			m.put("type_via",params.via.getTFLName());
+			m.put("name_via",jq.params.via.data);
+			m.put("type_via",jq.params.via.getTFLName());
 		}
 		m.put("place_via","London");
 		m.put("placeDefaultText_via","London");
 		m.put("includedMeans","checkbox");
 		m.put("inclMOT_11","1");
-		m.put("inclMOT_0",params.useRail?"on":"off");
-		m.put("inclMOT_1",params.useDLR?"on":"off");
-		m.put("inclMOT_2",params.useTube?"on":"off");
-		m.put("inclMOT_4",params.useTram?"on":"off");
-		m.put("inclMOT_5",params.useBus?"on":"off");
-		m.put("inclMOT_7",params.useCoach?"on":"off");
-		m.put("inclMOT_9",params.useRiver?"on":"off");
+		m.put("inclMOT_0",jq.params.useRail?"on":"off");
+		m.put("inclMOT_1",jq.params.useDLR?"on":"off");
+		m.put("inclMOT_2",jq.params.useTube?"on":"off");
+		m.put("inclMOT_4",jq.params.useTram?"on":"off");
+		m.put("inclMOT_5",jq.params.useBus?"on":"off");
+		m.put("inclMOT_7",jq.params.useCoach?"on":"off");
+		m.put("inclMOT_9",jq.params.useRiver?"on":"off");
 		m.put("trITMOTvalue101","60");
 		m.put("trITMOTvalue","20");
 		m.put("trITMOT","100");
-		m.put("changeSpeed",params.speed.toString());
+		m.put("changeSpeed",jq.params.speed.toString());
 		m.put("tripSelection","on");
 		m.put("itdLPxx_view","detail");
 		m.put("ptOptionsActive","1");
@@ -205,7 +220,7 @@ public class JourneyPlannerParser
 			}
 		}
 
-		return parseString(start,end,buc.outputData);
+		return parseString(jq.start,jq.end,buc.outputData);
 	}
 
 	public Vector<Journey> parseString(String data) throws ParseException
