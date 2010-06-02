@@ -59,7 +59,7 @@ public class JourneyPlannerParser
 		alt = Pattern.compile("alt=\"([^\"]+)\"");
 		motion = Pattern.compile("<strong>(?:Departing|Arriving):[^\n]+\n\\s+</strong>(\\S+)[^\n]*\n[^\n]*\n[^\\d]+(\\d+)[^\n]*\n\\s+(\\S+)\\s\n[^\n]*\n[^\\d]+(\\d+) at: (\\d+):(\\d+)</li>");
 		strip_link = Pattern.compile("<a href=\"[^\"]+\">([^<]+)</a>");
-		walk_to = Pattern.compile("Walk to (.+?)<br");
+		walk_to = Pattern.compile("Walk to (.+?)<br", Pattern.DOTALL);
 		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+?<br /><br />)<span class=\"zoneinfo\">(?:Z|z)one\\(s\\): ([\\d, ]+)</span>", Pattern.DOTALL);
 		tube_direct = Pattern.compile("<span class=\"[^\"]+\">([^<]+)</span> towards (.+?)<br");
 		bus_to = Pattern.compile("Route (?:Express )?Bus ([A-Z\\d]+) from Stop:  ([\\S\\d]+)<br[^>]*> towards (.+?)<br");
@@ -394,14 +394,27 @@ public class JourneyPlannerParser
 								rep.find();
 								segment = rep.group(1);
 							}
-							js.loc_start = segment;
+							if (segment.indexOf("Stop:")!=-1)
+							{
+								// FIXME: do something with the stop data
+								segment = segment.substring(0, segment.indexOf("Stop:"));
+							}
+							js.loc_start = segment.replaceAll("[^A-Za-z ]+$","");
 							switch (js.type)
 							{
 								case Walk:
 								{
 									Matcher w = walk_to.matcher(tdlist.group(1));
 									w.find();
-									js.loc_end = w.group(1);
+									String loc_end = w.group(1);
+									if (loc_end.indexOf("Stop:")!=-1)
+									{
+										Route ro = new Route();
+										ro.stop = loc_end.substring(loc_end.lastIndexOf("\t")).trim();
+										js.routes.add(ro);
+										loc_end = loc_end.substring(0, loc_end.indexOf("Stop:")).trim();
+									}
+									js.loc_end = loc_end;
 									break;
 								}
 								case Tube:
