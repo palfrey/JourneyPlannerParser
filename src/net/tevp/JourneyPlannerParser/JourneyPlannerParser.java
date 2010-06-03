@@ -46,7 +46,7 @@ public class JourneyPlannerParser
 	Pattern walk_to, tube_to, tube_direct, bus_to, rail_to;
 	Pattern transit_time, payonboard;
 	Pattern fieldset, legend, option;
-	Pattern tflerror;
+	Pattern tflerror, strip_span;
 
 	boolean debug;
 
@@ -63,7 +63,8 @@ public class JourneyPlannerParser
 		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+?<br /><br />)<span class=\"zoneinfo\">(?:Z|z)one\\(s\\): ([\\d, ]+)</span>", Pattern.DOTALL);
 		tube_direct = Pattern.compile("<span class=\"[^\"]+\">([^<]+)</span> towards (.+?)<br");
 		bus_to = Pattern.compile("Route (?:Express )?Bus ([A-Z\\d]+) from Stop:  ([\\S\\d]+)<br[^>]*> towards (.+?)<br");
-		rail_to = Pattern.compile("Take.+?<b>([^<]+)</b> towards ([^<]+)<br", Pattern.DOTALL);
+		rail_to = Pattern.compile("Take.+?<b>(.+?)</b> towards ([^<]+)<br", Pattern.DOTALL);
+		strip_span = Pattern.compile("<span[^>]+>([^<]+)</span>");
 		transit_time = Pattern.compile("time:\\s(\\d+).+?mins", Pattern.DOTALL);
 		payonboard = Pattern.compile("<table cellspacing=\"0\".*?</table>");
 
@@ -456,7 +457,14 @@ public class JourneyPlannerParser
 									while (ra.find())
 									{
 										Route ro = new Route();
-										ro.thing = ra.group(1);
+										if (ra.group(1).indexOf("<span")!=-1)
+										{
+											Matcher span = strip_span.matcher(ra.group(1));
+											span.find();
+											ro.thing = span.group(1);
+										}
+										else
+											ro.thing = ra.group(1);
 										ro.towards = ra.group(2);
 										js.routes.add(ro);
 									}
