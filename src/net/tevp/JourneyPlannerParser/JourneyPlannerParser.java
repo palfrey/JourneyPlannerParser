@@ -330,6 +330,8 @@ public class JourneyPlannerParser
 									js.type = TransportType.Rail;
 								else if (a.group(1).equals("River"))
 									js.type = TransportType.River;
+								else if (a.group(1).equals("DLR"))
+									js.type = TransportType.DLR;
 								else
 									throw new ParseException("Unknown transit type: "+a.group(1));
 
@@ -425,6 +427,7 @@ public class JourneyPlannerParser
 									break;
 								}
 								case Tube:
+								case DLR:
 								{
 									Matcher t = tube_to.matcher(tdlist.group(1));
 									t.find();
