@@ -43,7 +43,7 @@ public class JourneyPlannerParser
 	}
 
 	Pattern route, tds, alt, motion, strip_link;
-	Pattern walk_to, tube_to, tube_direct, bus_to, rail_to;
+	Pattern walk_to, tube_to, tube_direct, bus_to, rail_to, boat_to;
 	Pattern transit_time, payonboard;
 	Pattern fieldset, legend, option;
 	Pattern tflerror, strip_span;
@@ -64,6 +64,8 @@ public class JourneyPlannerParser
 		tube_direct = Pattern.compile("<span class=\"[^\"]+\">([^<]+)</span> towards (.+?)<br");
 		bus_to = Pattern.compile("Route (?:Express )?Bus ([A-Z\\d]+) from Stop:  ([\\S\\d]+)<br[^>]*> towards (.+?)<br");
 		rail_to = Pattern.compile("Take.+?<b>(.+?)</b> towards ([^<]+)<br", Pattern.DOTALL);
+		boat_to = Pattern.compile("Boat\\s+Thames Clipper towards ([^<]+)<br");
+		
 		strip_span = Pattern.compile("<span[^>]+>([^<]+)</span>");
 		transit_time = Pattern.compile("time:\\s(\\d+).+?mins", Pattern.DOTALL);
 		payonboard = Pattern.compile("<table cellspacing=\"0\".*?</table>");
@@ -326,6 +328,8 @@ public class JourneyPlannerParser
 									js.type = TransportType.Bus;
 								else if (a.group(1).equals("Rail"))
 									js.type = TransportType.Rail;
+								else if (a.group(1).equals("River"))
+									js.type = TransportType.River;
 								else
 									throw new ParseException("Unknown transit type: "+a.group(1));
 
@@ -466,6 +470,18 @@ public class JourneyPlannerParser
 										else
 											ro.thing = ra.group(1);
 										ro.towards = ra.group(2);
+										js.routes.add(ro);
+									}
+									assert js.routes.size()>0;
+									break;
+								}
+								case River:
+								{
+									Matcher ba = boat_to.matcher(tdlist.group(1));
+									while (ba.find())
+									{
+										Route ro = new Route();
+										ro.stop = ba.group(1);
 										js.routes.add(ro);
 									}
 									assert js.routes.size()>0;
