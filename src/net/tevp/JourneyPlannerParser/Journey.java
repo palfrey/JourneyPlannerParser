@@ -1,6 +1,7 @@
 package net.tevp.JourneyPlannerParser;
 
 import java.util.*;
+import java.util.regex.*;
 
 public class Journey extends Vector<JourneySegment>
 {
@@ -12,6 +13,19 @@ public class Journey extends Vector<JourneySegment>
 			sb.append(String.format("\n\t- %s", get(i)));
 		}
 		return sb.toString();
+	}
+
+	private String stripString(String inp)
+	{
+		Pattern noSpaces = Pattern.compile("\\s");
+		String[] bits = noSpaces.split(inp);
+		StringBuffer sb = new StringBuffer();
+		for (String s: bits)
+		{
+			sb.append(s);
+			sb.append(" ");
+		}
+		return sb.toString().trim();
 	}
 
 	public void corrections()
@@ -38,6 +52,9 @@ public class Journey extends Vector<JourneySegment>
 				get(i-1).time_end = (Date)get(i).time_start.clone();
 			if (i!=0 && get(i).time_start == null && get(i-1).time_end!=null)
 				get(i).time_start = (Date)get(i-1).time_end.clone();
+
+			get(i).loc_start = stripString(get(i).loc_start);
+			get(i).loc_end = stripString(get(i).loc_end);
 		}
 	}
 	
