@@ -7,12 +7,30 @@ public class Journey extends Vector<JourneySegment>
 {
 	public String toString()
 	{
-		StringBuffer sb = new StringBuffer("Journey:");
+		StringBuffer sb = new StringBuffer("Journey: "+formattedMinutes());
 		for (int i=0;i<size();i++)
 		{
 			sb.append(String.format("\n\t- %s", get(i)));
 		}
 		return sb.toString();
+	}
+
+	public String formattedMinutes()
+	{
+		int minutes = getMinutes();
+		if (minutes == 1)
+			return "1 minute";
+		else if (minutes < 60)
+			return String.format("%d minutes", minutes);
+		else if (minutes < 120)
+			return String.format("1 hour and %d minutes", minutes - 60);
+		else
+			return String.format("%d hours and %d minutes", minutes/60, minutes%60);
+	}
+
+	public int getMinutes()
+	{
+		return (int)((last().time_end.getTime()-get(0).time_start.getTime())/1000)/60;
 	}
 
 	private String stripString(String inp)
