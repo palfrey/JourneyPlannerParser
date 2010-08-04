@@ -131,7 +131,7 @@ public class JourneyPlannerParser
 		Calendar time = new GregorianCalendar();
 		time.setTime(jq.params.when);
 		m.put("itdDateDay",String.format("%02d", time.get(Calendar.DAY_OF_MONTH)));
-		m.put("itdDateYearMonth", String.format("%4d%02d", time.get(Calendar.YEAR),time.get(Calendar.MONTH)));
+		m.put("itdDateYearMonth", String.format("%4d%02d", time.get(Calendar.YEAR),time.get(Calendar.MONTH)+1));
 		m.put("itdTimeHour",String.format("%02d", time.get(Calendar.HOUR_OF_DAY)));
 		m.put("itdTimeMinute",String.format("%02d", time.get(Calendar.MINUTE)));
 
