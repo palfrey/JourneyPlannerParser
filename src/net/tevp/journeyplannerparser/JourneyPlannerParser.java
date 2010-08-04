@@ -288,7 +288,7 @@ public class JourneyPlannerParser
 			throw new TFLRequestException(error.group(1));
 
 		Calendar base = new GregorianCalendar();
-		base.set(Calendar.DAY_OF_MONTH, Integer.parseInt(d.group(2)));
+		base.set(Calendar.DAY_OF_MONTH, Integer.parseInt(d.group(2))-1);
 		DateFormatSymbols dfs = new DateFormatSymbols();
 		
 		base.set(Calendar.MONTH, Arrays.asList(dfs.getMonths()).indexOf(d.group(3)));
