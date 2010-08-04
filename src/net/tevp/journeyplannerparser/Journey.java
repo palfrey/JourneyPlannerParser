@@ -1,4 +1,4 @@
-package net.tevp.JourneyPlannerParser;
+package net.tevp.journeyplannerparser;
 
 import java.util.*;
 import java.util.regex.*;

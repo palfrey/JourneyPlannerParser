@@ -1,4 +1,4 @@
-SOURCE_FILES=$(wildcard src/net/tevp/JourneyPlannerParser/*.java)
+SOURCE_FILES=$(wildcard src/net/tevp/journeyplannerparser/*.java)
 
 # This should be the Android SDK root directory
 ANDROID ?= ../../../android-sdk-linux_86
@@ -8,7 +8,7 @@ ANDROID_VERSION=1.5
 
 .PHONY: first
 first: bin-stamp
-	java -ea -cp bin net.tevp.JourneyPlannerParser.JourneyPlannerParser
+	java -ea -cp bin net.tevp.journeyplannerparser.JourneyPlannerParser
 
 doc::
 	javadoc -d doc $(JAVAFILES)

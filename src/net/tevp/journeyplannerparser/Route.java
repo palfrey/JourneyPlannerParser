@@ -1,4 +1,4 @@
-package net.tevp.JourneyPlannerParser;
+package net.tevp.journeyplannerparser;
 public class Route
 {
 	public String thing;

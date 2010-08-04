@@ -1,4 +1,4 @@
-package net.tevp.JourneyPlannerParser;
+package net.tevp.journeyplannerparser;
 
 public class JourneyLocation
 {
@@ -15,6 +15,9 @@ public class JourneyLocation
 	{
 		return type.getTFLName();
 	}
+
+	public String toString()
+	{
+		return String.format("JourneyLocation <%s, '%s'>", type, data);
+	}
 }
-
-
