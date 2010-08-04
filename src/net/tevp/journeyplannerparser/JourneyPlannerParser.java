@@ -187,7 +187,7 @@ public class JourneyPlannerParser
 			}
 			catch (UnsupportedEncodingException e)
 			{
-				throw new ParseException("Error trying to encode '"+m.get(key)+"'");
+				throw new ParseException("Error trying to encode '"+m.get(key)+"'", e);
 			}
 		}
 		if (debug)
@@ -200,9 +200,7 @@ public class JourneyPlannerParser
 		}
 		catch (IOException e)
 		{
-			ParseException pe = new ParseException("IOException trying to get data from TfL: "+e.getMessage());
-			pe.initCause(e);
-			throw pe;
+			throw new ConnectionException("IOException trying to get data from TfL: "+e.getMessage(), e);
 		}
 		if (debug)
 			System.out.println(buc.headers);
@@ -217,11 +215,11 @@ public class JourneyPlannerParser
 			}
 			catch (FileNotFoundException e)
 			{
-				throw new ParseException("Failure to write dump.html for debug: "+e.getMessage());
+				throw new ParseException("Failure to write dump.html for debug: "+e.getMessage(), e);
 			}
 			catch (IOException e)
 			{
-				throw new ParseException("IOException while writing dump.html for debug: "+e.getMessage());
+				throw new ParseException("IOException while writing dump.html for debug: "+e.getMessage(), e);
 			}
 		}
 
