@@ -236,8 +236,6 @@ public class JourneyPlannerParser
 	public Vector<Journey> parseString(JourneyLocation start, JourneyLocation end, String data) throws ParseException
 	{
 		Matcher error = tflerror.matcher(data);
-		if (error.find())
-			throw new TFLRequestException(error.group(1));
 		
 		Vector<Journey> res = new Vector<Journey>();
 		
@@ -256,10 +254,18 @@ public class JourneyPlannerParser
 					else if (leg.group(1).compareTo("Travelling to...")==0)
 						ale.original = end;
 					else
+					{	
+						if (error.find())
+							throw new TFLRequestException(error.group(1));
 						throw new ParseException(leg.group(1));
+					}
 				}
 				else
+				{
+					if (error.find())
+						throw new TFLRequestException(error.group(1));
 					throw new ParseException(field.group(1));
+				}
 
 				Matcher opts = option.matcher(field.group(1));
 				ale.options = new Vector<String>();
@@ -268,12 +274,18 @@ public class JourneyPlannerParser
 					ale.options.add(opts.group(1));
 				}
 				if (ale.options.size()==0)
+				{
+					if (error.find())
+						throw new TFLRequestException(error.group(1));
 					throw new ParseException(field.group(1));
+				}
 					
 				throw ale;
 			}
 		}
-		//System.out.println(d.group(0));
+
+		if (error.find())
+			throw new TFLRequestException(error.group(1));
 
 		Calendar base = new GregorianCalendar();
 		base.set(Calendar.DAY_OF_MONTH, Integer.parseInt(d.group(2)));
