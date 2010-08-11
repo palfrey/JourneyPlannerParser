@@ -354,6 +354,8 @@ public class JourneyPlannerParser
 									int hour = Integer.parseInt(tdlist.group(1).substring(0,2));
 									if (hour<base.get(Calendar.HOUR_OF_DAY))
 										hour += 24;
+ 									if (base.get(Calendar.HOUR_OF_DAY)+12 < hour)
+										hour -= 24; // there's been a wraparound...
 									ts.set(Calendar.HOUR_OF_DAY, hour);
 									ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(3,5)));
 									js.time_start = ts.getTime();
