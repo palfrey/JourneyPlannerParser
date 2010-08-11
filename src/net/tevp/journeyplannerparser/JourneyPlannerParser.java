@@ -286,7 +286,7 @@ public class JourneyPlannerParser
 			throw new TFLRequestException(error.group(1));
 
 		Calendar base = new GregorianCalendar();
-		base.set(Calendar.DAY_OF_MONTH, Integer.parseInt(d.group(2))-1);
+		base.set(Calendar.DAY_OF_MONTH, Integer.parseInt(d.group(2)));
 		DateFormatSymbols dfs = new DateFormatSymbols();
 		
 		base.set(Calendar.MONTH, Arrays.asList(dfs.getMonths()).indexOf(d.group(3)));
@@ -368,6 +368,8 @@ public class JourneyPlannerParser
 										hour = Integer.parseInt(tdlist.group(1).substring(len-5,len-3));
 										if (hour<base.get(Calendar.HOUR_OF_DAY))
 											hour += 24;
+										if (base.get(Calendar.HOUR_OF_DAY)+12 < hour)
+											hour -= 24; // there's been a wraparound...
 										ts.set(Calendar.HOUR_OF_DAY, hour);
 										ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(len-2,len)));
 										js.time_end = ts.getTime();
