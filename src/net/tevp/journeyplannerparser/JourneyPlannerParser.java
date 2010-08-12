@@ -374,7 +374,7 @@ public class JourneyPlannerParser
 										ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(len-2,len)));
 										js.time_end = ts.getTime();
 
-										if (j.size()>0 && j.last().time_end == null)
+										if (j.last()!=null && j.last().time_end == null)
 											j.last().time_end = (Date)js.time_start.clone();
 									}
 									catch (NumberFormatException e)
@@ -384,7 +384,7 @@ public class JourneyPlannerParser
 								}
 								else
 								{
-									if (j.last().time_end != null)
+									if (j.last()!=null && j.last().time_end != null)
 										js.time_start = (Date)j.last().time_end.clone();
 								}
 							}
