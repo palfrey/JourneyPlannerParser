@@ -402,6 +402,8 @@ public class JourneyPlannerParser
 									j.last().time_end = ts.getTime();
 								}
 								end_of_journey = true;
+								if (j.size()==1 && j.get(0).time_start == null)
+									j.get(0).time_start = base.getTime();
 								j.corrections();
 								res.add(j);
 							}
