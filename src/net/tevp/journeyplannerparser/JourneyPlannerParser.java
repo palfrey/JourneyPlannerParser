@@ -15,20 +15,24 @@ public class JourneyPlannerParser
 		try
 		{
 			JourneyPlannerParser jpp = new JourneyPlannerParser(true);
-			Vector<Journey> js;
+			Vector<Journey> j;
 			JourneyParameters jp = new JourneyParameters();
 			//jp.when = new GregorianCalendar(2010, 5, 10, 0, 23).getTime();
 			jp.speed = Speed.fast;
 			//js = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
 			js = jpp.doJourney(LocationType.Stop.create("Kings Cross Rail Station"),LocationType.Postcode.create("E8 1JH"), jp);
 			//js = jpp.doJourney(LocationType.Stop.create("Kings Cross"),LocationType.Postcode.create("E8 1JH"), jp);
-			for (int i=0;i<js.size();i++)
+			for (int i=0;i<j.size();i++)
 			{
 				System.out.println(i);
-				System.out.println(js.get(i));
+				System.out.println(j.get(i));
 				System.out.println("");
+				assert j.get(i).getMinutes()<100;
+				assert j.get(i).getMinutes()>0;
+				for (JourneySegment js: j.get(i))
+					assert js.time_start.getTime() < js.time_end.getTime();
 			}
-			assert js.size()!=0;
+			assert j.size()!=0;
 		}
 		catch (AmbiguousLocationException e)
 		{
