@@ -316,7 +316,7 @@ public class JourneyPlannerParser
 		
 		base.set(Calendar.MONTH, Arrays.asList(dfs.getMonths()).indexOf(d.group(3)));
 		base.set(Calendar.YEAR, Integer.parseInt(d.group(4)));
-		base.set(Calendar.HOUR, Integer.parseInt(d.group(5)));
+		base.set(Calendar.HOUR_OF_DAY, Integer.parseInt(d.group(5)));
 		base.set(Calendar.MINUTE, Integer.parseInt(d.group(6)));
 		base.set(Calendar.SECOND, 0);
 		//System.out.println(base.getTime());
