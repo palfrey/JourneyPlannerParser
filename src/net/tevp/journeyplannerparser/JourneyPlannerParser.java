@@ -235,6 +235,27 @@ public class JourneyPlannerParser
 		return parseString(null, null, data);
 	}
 
+	private int normaliseHour(int hour, Calendar base)
+	{
+		int baseHour = base.get(Calendar.HOUR_OF_DAY);
+		if (debug)
+			System.out.println("hour is "+hour+" and base hour is "+baseHour);
+
+		if (hour<baseHour-6)
+		{
+			hour += 24;
+			if (debug)
+				System.out.println("add a day");
+		}
+		else if (baseHour+12 < hour)
+		{
+			if (debug)
+				System.out.println("delete a day as hour is "+hour);
+			hour -= 24; // there's been a wraparound...
+		}
+		return hour;
+	}
+
 	public Vector<Journey> parseString(JourneyLocation start, JourneyLocation end, String data) throws ParseException
 	{
 		Matcher error = tflerror.matcher(data);
@@ -355,11 +376,7 @@ public class JourneyPlannerParser
 										System.out.println("time parse: "+tdlist.group(1));
 									Calendar ts = Calendar.getInstance();
 									ts.setTime(base.getTime());
-									int hour = Integer.parseInt(tdlist.group(1).substring(0,2));
-									if (hour<base.get(Calendar.HOUR_OF_DAY))
-										hour += 24;
-									else if (base.get(Calendar.HOUR_OF_DAY)+12 < hour)
-										hour -= 24; // there's been a wraparound...
+									int hour = normaliseHour(Integer.parseInt(tdlist.group(1).substring(0,2)), base);
 									ts.set(Calendar.HOUR_OF_DAY, hour);
 									ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(3,5)));
 									js.time_start = ts.getTime();
@@ -369,11 +386,7 @@ public class JourneyPlannerParser
 									try
 									{
 										int len = tdlist.group(1).length();
-										hour = Integer.parseInt(tdlist.group(1).substring(len-5,len-3));
-										if (hour<base.get(Calendar.HOUR_OF_DAY))
-											hour += 24;
-										else if (base.get(Calendar.HOUR_OF_DAY)+12 < hour)
-											hour -= 24; // there's been a wraparound...
+										hour = normaliseHour(Integer.parseInt(tdlist.group(1).substring(len-5,len-3)), base);
 										ts.set(Calendar.HOUR_OF_DAY, hour);
 										ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(len-2,len)));
 										js.time_end = ts.getTime();
@@ -398,9 +411,7 @@ public class JourneyPlannerParser
 								{
 									Calendar ts = Calendar.getInstance();
 									ts.setTime(base.getTime());
-									int hour = Integer.parseInt(tdlist.group(1).substring(0,2));
-									if (hour<base.get(Calendar.HOUR_OF_DAY))
-										hour += 24;
+									int hour = normaliseHour(Integer.parseInt(tdlist.group(1).substring(0,2)), base);
 									ts.set(Calendar.HOUR_OF_DAY, hour);
 									ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(3,5)));
 									j.last().time_end = ts.getTime();
