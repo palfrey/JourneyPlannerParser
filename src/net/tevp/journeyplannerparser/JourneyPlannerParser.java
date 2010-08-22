@@ -51,6 +51,7 @@ public class JourneyPlannerParser
 	Pattern transit_time, payonboard;
 	Pattern fieldset, legend, option;
 	Pattern tflerror, strip_span;
+	static String unhappylocation = "id=\"from-postcode\" disabled=\"disabled";
 
 	boolean debug;
 
@@ -265,6 +266,8 @@ public class JourneyPlannerParser
 		Matcher d = motion.matcher(data);
 		if (!d.find())
 		{
+			if (data.indexOf(unhappylocation)!=-1) // very messed up location
+				throw new AmbiguousLocationException();
 			Matcher field = fieldset.matcher(data);
 			if (field.find())
 			{
