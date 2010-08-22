@@ -6,5 +6,6 @@ public enum Impediments
 	LiftUp,
 	EscalatorUp,
 	EscalatorDown,
-	RampDown
+	RampDown,
+	RampUp
 }
