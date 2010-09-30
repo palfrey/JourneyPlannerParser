@@ -322,7 +322,8 @@ public class JourneyPlannerParser
 		base.set(Calendar.HOUR_OF_DAY, Integer.parseInt(d.group(5)));
 		base.set(Calendar.MINUTE, Integer.parseInt(d.group(6)));
 		base.set(Calendar.SECOND, 0);
-		//System.out.println(base.getTime());
+		if (debug)
+			System.out.println(base.getTime());
 		
 		Matcher pb = payonboard.matcher(data);
 
