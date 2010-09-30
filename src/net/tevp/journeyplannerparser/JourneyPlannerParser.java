@@ -40,6 +40,11 @@ public class JourneyPlannerParser
 			System.out.println(e.options);
 			e.printStackTrace();
 		}
+		catch (DodgyLocationException e)
+		{
+			System.out.println(e.original);
+			e.printStackTrace();
+		}
 		catch (ParseException e)
 		{
 			e.printStackTrace();
@@ -301,9 +306,9 @@ public class JourneyPlannerParser
 				}
 				if (ale.options.size()==0)
 				{
-					if (error.find())
-						throw new TFLRequestException(error.group(1));
-					throw new ParseException(field.group(1));
+					DodgyLocationException dle = new DodgyLocationException();
+					dle.original = ale.original;
+					throw dle;
 				}
 					
 				throw ale;
