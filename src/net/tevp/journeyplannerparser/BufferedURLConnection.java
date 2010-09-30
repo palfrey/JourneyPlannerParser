@@ -53,6 +53,8 @@ class BufferedURLConnection
 
 		outputData = "";
 		InputStream is = uc.getInputStream();
+		if (is == null)
+			throw new IOException("Failure getting stream");
 		while (true)
 		{
 			byte[] buffer = new byte[1024];
