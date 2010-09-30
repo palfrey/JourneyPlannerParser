@@ -61,7 +61,7 @@ bin-stamp: bin $(BIN_FILES)
 
 $(BIN_FILES): $(SOURCE_WITH_R)
 	javac -source 1.5 -target 1.5 -cp $(PLATFORM_PATH)/android.jar \
-		-d bin $< $(SOURCE_WITH_R) -Xlint:unchecked
+		-d bin $< $(SOURCE_WITH_R) -Xlint:unchecked -Xlint:deprecation
 
 clean::
 	rm -f $(BIN_FILES)
