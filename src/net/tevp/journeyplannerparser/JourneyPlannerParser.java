@@ -272,7 +272,7 @@ public class JourneyPlannerParser
 		if (!d.find())
 		{
 			if (data.indexOf(unhappylocation)!=-1) // very messed up location
-				throw new AmbiguousLocationException();
+				throw new DodgyLocationException();
 			Matcher field = fieldset.matcher(data);
 			if (field.find())
 			{
