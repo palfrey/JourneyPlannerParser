@@ -306,6 +306,11 @@ public class JourneyPlannerParser
 				}
 				if (ale.options.size()==0)
 				{
+					if (error.find())
+					{
+						if (error.group(1).compareTo("Journey Planner has noticed that the start is too close to the destination.")==0)
+							throw new TooCloseException(start);
+					}
 					throw new DodgyLocationException(ale.original);
 				}
 					
