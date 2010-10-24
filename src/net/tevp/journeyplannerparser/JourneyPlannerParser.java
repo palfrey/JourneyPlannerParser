@@ -20,7 +20,7 @@ public class JourneyPlannerParser
 			//jp.when = new GregorianCalendar(2010, 5, 10, 0, 23).getTime();
 			jp.speed = Speed.fast;
 			//js = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
-			js = jpp.doJourney(LocationType.Stop.create("Kings Cross Rail Station"),LocationType.Postcode.create("E8 1JH"), jp);
+			j = jpp.doJourney(LocationType.Postcode.create("n19 3qn"),LocationType.Postcode.create("n19 3qn"), jp);
 			//js = jpp.doJourney(LocationType.Stop.create("Kings Cross"),LocationType.Postcode.create("E8 1JH"), jp);
 			for (int i=0;i<j.size();i++)
 			{
