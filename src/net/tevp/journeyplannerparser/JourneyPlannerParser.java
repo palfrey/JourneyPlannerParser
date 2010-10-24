@@ -306,9 +306,7 @@ public class JourneyPlannerParser
 				}
 				if (ale.options.size()==0)
 				{
-					DodgyLocationException dle = new DodgyLocationException();
-					dle.original = ale.original;
-					throw dle;
+					throw new DodgyLocationException(ale.original);
 				}
 					
 				throw ale;
