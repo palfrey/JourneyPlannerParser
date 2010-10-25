@@ -93,17 +93,16 @@ public class JourneyPlannerParser
 		return runAsyncJourney(doAsyncJourney(start,end,params));
 	}
 
-	public JourneyQuery doAsyncJourney(JourneyLocation start, JourneyLocation end, JourneyParameters params)
+	public static JourneyQuery doAsyncJourney(JourneyLocation start, JourneyLocation end, JourneyParameters params)
 	{
 		JourneyQuery jq = new JourneyQuery();
 		jq.start = start;
 		jq.end = end;
 		jq.params = params;
-		jq.jpp = this;
 		return jq;	
 	}
 
-	protected Vector<Journey> runAsyncJourney(JourneyQuery jq) throws ParseException
+	public Vector<Journey> runAsyncJourney(JourneyQuery jq) throws ParseException
 	{
 		HashMap<String,String> m = new HashMap<String,String>();
 		m.put("language","en");
