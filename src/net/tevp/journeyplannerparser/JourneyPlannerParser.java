@@ -188,7 +188,7 @@ public class JourneyPlannerParser
 		m.put("Submit","View selected");
 
 		StringBuffer sb = new StringBuffer();
-		for (String key: m.keySet())
+		for (String key: new TreeSet<String>(m.keySet()))
 		{
 			if (sb.length()>0)
 				sb.append("&");
