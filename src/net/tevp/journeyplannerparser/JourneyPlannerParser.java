@@ -552,6 +552,8 @@ public class JourneyPlannerParser
 									js.impediments.add(Impediments.StairsDown);
 								else if (alts.group(1).equals("lift up"))
 									js.impediments.add(Impediments.LiftUp);
+								else if (alts.group(1).equals("lift down"))
+									js.impediments.add(Impediments.LiftDown);
 								else if (alts.group(1).equals("escalator up"))
 									js.impediments.add(Impediments.EscalatorUp);
 								else if (alts.group(1).equals("escalator down"))
