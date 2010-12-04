@@ -52,7 +52,7 @@ public class JourneyPlannerParser
 	}
 
 	Pattern route, tds, alt, motion, strip_link;
-	Pattern walk_to, tube_to, tube_direct, bus_to, rail_to, boat_to;
+	Pattern walk_to, tube_to, tube_direct, bus_to, replacement_bus_to, rail_to, boat_to;
 	Pattern transit_time, payonboard;
 	Pattern fieldset, legend, option;
 	Pattern tflerror, strip_span;
@@ -73,6 +73,8 @@ public class JourneyPlannerParser
 		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+?<br /><br />)<span class=\"zoneinfo\">(?:Z|z)one\\(s\\): ([\\d, ]+)</span>", Pattern.DOTALL);
 		tube_direct = Pattern.compile("<span class=\"[^\"]+\">([^<]+)</span> towards (.+?)<br");
 		bus_to = Pattern.compile("Route (?:Express )?Bus ([A-Z\\d]+) from Stop:  ([\\S\\d]+)<br[^>]*> towards (.+?)<br");
+		replacement_bus_to = Pattern.compile("Stop:[^A-Z\\d]+([A-Z\\d]+)</a><br />Take[^R]+Route Replacement Bus ([A-Z\\d]+) towards ([^<]+)<br", Pattern.DOTALL);
+
 		rail_to = Pattern.compile("Take.+?<b>(.+?)</b> towards ([^<]+)<br", Pattern.DOTALL);
 		boat_to = Pattern.compile("Boat\\s+Thames Clipper towards ([^<]+)<br");
 		
@@ -488,14 +490,30 @@ public class JourneyPlannerParser
 								}
 								case Bus:
 								{
-									Matcher b = bus_to.matcher(tdlist.group(1));
-									while (b.find())
+									Matcher b;
+									if (tdlist.group(1).indexOf("Replacement")!=-1)
 									{
-										Route ro = new Route();
-										ro.thing = b.group(1);
-										ro.stop = b.group(2);
-										ro.towards = b.group(3);
-										js.routes.add(ro);
+										b = replacement_bus_to.matcher(tdlist.group(1));
+										while (b.find())
+										{
+											Route ro = new Route();
+											ro.thing = b.group(2);
+											ro.stop = b.group(1);
+											ro.towards = b.group(3);
+											js.routes.add(ro);
+										}
+									}
+									else
+									{
+										b = bus_to.matcher(tdlist.group(1));
+										while (b.find())
+										{
+											Route ro = new Route();
+											ro.thing = b.group(1);
+											ro.stop = b.group(2);
+											ro.towards = b.group(3);
+											js.routes.add(ro);
+										}
 									}
 									assert js.routes.size()>0;
 									break;
