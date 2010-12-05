@@ -6,6 +6,9 @@ import java.util.*;
 
 public class ParcelableJourneyParameters extends JourneyParameters implements Parcelable
 {
+	ParcelableJourneyParameters()
+	{}
+
 	ParcelableJourneyParameters(JourneyParameters jp)
 	{
 		when = jp.when;
@@ -29,21 +32,25 @@ public class ParcelableJourneyParameters extends JourneyParameters implements Pa
 		dest.writeString(speed.name());
 		dest.writeString(timeType.name());
 		dest.writeString(routeType.name());
-		dest.writeParcelable(new ParcelableJourneyLocation(via), flags);
+		if (via == null)
+			dest.writeParcelable(new ParcelableJourneyLocation(), flags);
+		else
+			dest.writeParcelable(new ParcelableJourneyLocation(via), flags);
 		dest.writeBooleanArray(new boolean[] {useRail, useDLR, useTube, useTram, useBus, useCoach, useRiver});
 	}
 
 	@Override
 	public int describeContents() { return 0;}
 
-	public static final Parcelable.Creator<JourneyParameters> CREATOR = new Parcelable.Creator<JourneyParameters>() {
-		public JourneyParameters createFromParcel(Parcel in) {
-			JourneyParameters jp = new JourneyParameters();
+	public static final Parcelable.Creator<ParcelableJourneyParameters> CREATOR = new Parcelable.Creator<ParcelableJourneyParameters>() {
+		public ParcelableJourneyParameters createFromParcel(Parcel in) {
+			ParcelableJourneyParameters jp = new ParcelableJourneyParameters();
+			ClassLoader cl = ParcelableJourneyParameters.class.getClassLoader();
 			jp.when = new Date(in.readLong());
 			jp.speed = Enum.valueOf(Speed.class, in.readString());
 			jp.timeType = Enum.valueOf(TimeType.class, in.readString());
 			jp.routeType = Enum.valueOf(RouteType.class, in.readString());
-			jp.via = in.readParcelable(null);
+			jp.via = in.readParcelable(cl);
 
 			boolean[] pts = new boolean[7];
 			in.readBooleanArray(pts);
@@ -57,8 +64,8 @@ public class ParcelableJourneyParameters extends JourneyParameters implements Pa
 			return jp;
 		}
 
-		public JourneyParameters[] newArray(int size) {
-			return new JourneyParameters[size];
+		public ParcelableJourneyParameters[] newArray(int size) {
+			return new ParcelableJourneyParameters[size];
 		}
 	};
 }

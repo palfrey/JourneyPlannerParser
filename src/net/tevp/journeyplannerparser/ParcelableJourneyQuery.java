@@ -24,18 +24,18 @@ public class ParcelableJourneyQuery extends JourneyQuery implements Parcelable
 	@Override
 	public int describeContents() { return 0;}
 
-    public static final Parcelable.Creator<JourneyQuery> CREATOR = new Parcelable.Creator<JourneyQuery>() {
-        public JourneyQuery createFromParcel(Parcel in) {
+    public static final Parcelable.Creator<ParcelableJourneyQuery> CREATOR = new Parcelable.Creator<ParcelableJourneyQuery>() {
+        public ParcelableJourneyQuery createFromParcel(Parcel in) {
             JourneyQuery jq = new JourneyQuery();
-			ClassLoader cl = JourneyLocation.class.getClassLoader();
+			ClassLoader cl = JourneyQuery.class.getClassLoader();
 			jq.start = in.readParcelable(cl);
 			jq.end = in.readParcelable(cl);
 			jq.params = in.readParcelable(cl);
-			return jq;
+			return new ParcelableJourneyQuery(jq);
         }
 
-        public JourneyQuery[] newArray(int size) {
-            return new JourneyQuery[size];
+        public ParcelableJourneyQuery[] newArray(int size) {
+            return new ParcelableJourneyQuery[size];
         }
     };
 }
