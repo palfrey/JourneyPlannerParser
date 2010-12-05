@@ -349,7 +349,7 @@ public class JourneyPlannerParser
 			boolean end_of_journey = false;
 			while (tdlist.find())
 			{	
-				if (!end_of_journey)
+				if (!end_of_journey || type==1) // do an extra type 1 to get the end name
 				{
 					if (debug)
 					{
@@ -440,7 +440,8 @@ public class JourneyPlannerParser
 						case 1:
 						{
 							String segment = tdlist.group(1);
-							segment = segment.substring(0,segment.indexOf("<br"));
+							if (segment.indexOf("<br")!=-1)
+								segment = segment.substring(0,segment.indexOf("<br"));
 							if (segment.indexOf("<a")!=-1)
 							{
 								Matcher rep = strip_link.matcher(segment);
@@ -453,6 +454,13 @@ public class JourneyPlannerParser
 								segment = segment.substring(0, segment.indexOf("Stop:"));
 							}
 							js.loc_start = segment.replaceAll("[^A-Za-z ]+$","");
+							if (end_of_journey)
+							{
+								js.loc_end = js.loc_start;
+								js.loc_start = "";
+								j.corrections();
+								break;
+							}
 							switch (js.type)
 							{
 								case Walk:

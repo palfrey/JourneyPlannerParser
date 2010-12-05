@@ -52,6 +52,8 @@ public class Journey extends Vector<JourneySegment>
 		{
 			if (i!=size()-1 && get(i).loc_end == "")
 				get(i).loc_end = get(i+1).loc_start;
+			if (i!=0 && get(i).loc_start == "")
+				get(i).loc_start = get(i-1).loc_end;
 			if (get(i).time_start == null && get(i).time_end!= null && get(i).minutes != 0)
 			{
 				Calendar cal = Calendar.getInstance();
