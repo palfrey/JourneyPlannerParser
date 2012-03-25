@@ -52,7 +52,7 @@ public class JourneyPlannerParser
 	}
 
 	Pattern route, tds, alt, motion, strip_link;
-	Pattern walk_to, tube_to, tube_direct, bus_to, replacement_bus_to, rail_to, boat_to;
+	Pattern walk_to, tube_to, tube_direct, bus_to, replacement_bus_to, rail_to, boat_to, tram_to;
 	Pattern transit_time, payonboard;
 	Pattern fieldset, legend, option;
 	Pattern tflerror, strip_span;
@@ -77,6 +77,7 @@ public class JourneyPlannerParser
 
 		rail_to = Pattern.compile("Take.+?<b>(.+?)</b> towards ([^<]+)<br", Pattern.DOTALL);
 		boat_to = Pattern.compile("Boat\\s+Thames Clipper towards ([^<]+)<br");
+		tram_to = Pattern.compile("Take(.+?) towards ([^<]+)<br", Pattern.DOTALL);
 		
 		strip_span = Pattern.compile("<span[^>]+>([^<]+)</span>");
 		transit_time = Pattern.compile("time:\\s(\\d+).+?mins", Pattern.DOTALL);
@@ -380,6 +381,8 @@ public class JourneyPlannerParser
 									js.type = TransportType.River;
 								else if (a.group(1).equals("DLR"))
 									js.type = TransportType.DLR;
+								else if (a.group(1).equals("Tram"))
+									js.type = TransportType.Tram;
 								else
 									throw new ParseException("Unknown transit type: "+a.group(1));
 
@@ -553,6 +556,19 @@ public class JourneyPlannerParser
 									{
 										Route ro = new Route();
 										ro.stop = ba.group(1);
+										js.routes.add(ro);
+									}
+									assert js.routes.size()>0;
+									break;
+								}
+								case Tram:
+								{
+									Matcher ba = tram_to.matcher(tdlist.group(1));
+									while (ba.find())
+									{
+										Route ro = new Route();
+										ro.stop = ba.group(1).replace("\u00A0"," ").trim();
+										ro.towards = ba.group(2);
 										js.routes.add(ro);
 									}
 									assert js.routes.size()>0;
