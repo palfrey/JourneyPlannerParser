@@ -17,10 +17,10 @@ public class JourneyPlannerParser
 			JourneyPlannerParser jpp = new JourneyPlannerParser(true);
 			Vector<Journey> j;
 			JourneyParameters jp = new JourneyParameters();
-			//jp.when = new GregorianCalendar(2010, 5, 10, 0, 23).getTime();
+			jp.when = new GregorianCalendar(2013, 5, 10, 6, 23).getTime();
 			jp.speed = Speed.fast;
-			//js = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
-			j = jpp.doJourney(LocationType.Postcode.create("n19 3qn"),LocationType.Postcode.create("n19 3qn"), jp);
+			j = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
+			//j = jpp.doJourney(LocationType.Postcode.create("n19 3qn"),LocationType.Postcode.create("n19 3qn"), jp);
 			//js = jpp.doJourney(LocationType.Stop.create("Kings Cross"),LocationType.Postcode.create("E8 1JH"), jp);
 			for (int i=0;i<j.size();i++)
 			{
@@ -55,7 +55,7 @@ public class JourneyPlannerParser
 	Pattern walk_to, tube_to, tube_direct, bus_to, rail_to, boat_to;
 	Pattern transit_time, payonboard;
 	Pattern fieldset, legend, option;
-	Pattern tflerror, strip_span;
+	Pattern tflerror, strip_span, timeMatch;
 	static String unhappylocation = "id=\"from-postcode\" disabled=\"disabled";
 
 	boolean debug;
@@ -64,20 +64,21 @@ public class JourneyPlannerParser
 	{
 		debug = _debug;
 
-		route = Pattern.compile("<table class=\"routedetails\">(.+?)</table>", Pattern.DOTALL);
-		tds = Pattern.compile("<td[^>]*?>(.*?)</td>", Pattern.DOTALL);
+		route = Pattern.compile("<table class=\"routedetails cb\">(.+?)</table><div id=\"journeytext", Pattern.DOTALL);
+		tds = Pattern.compile("<td[^>]*?>(.*?)</td>(?!<td>\\d+)", Pattern.DOTALL);
 		alt = Pattern.compile("alt=\"([^\"]+)\"");
 		motion = Pattern.compile("<strong>(?:Leaving|Arriving)</strong> on \\S+ (\\d+) (\\S+) (\\d+) at (\\d+):(\\d+)");
-		strip_link = Pattern.compile("<a href=\"[^\"]+\">([^<]+)</a>");
-		walk_to = Pattern.compile("Walk to (.+?)<br", Pattern.DOTALL);
-		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+?<br /><br />)<span class=\"zoneinfo\">(?:Z|z)one\\(s\\): ([\\d, ]+)</span>", Pattern.DOTALL);
-		tube_direct = Pattern.compile("<span class=\"[^\"]+\">([^<]+)</span> towards (.+?)<br");
+		// Leaving</strong> on Sat 13 Apr 2013 at 10:32
+		strip_link = Pattern.compile("<a[^>]+href=\"[^\"]+\">([^<]+)</a>");
+		walk_to = Pattern.compile("Walk to (.+)", Pattern.DOTALL);
+		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+<br />)", Pattern.DOTALL);
+		tube_direct = Pattern.compile("<span class=\"[^\"]+\">([^<]+)</span> towards ([^\\s].+?)<br");
 		bus_to = Pattern.compile("Route (?:Express )?Bus ([A-Z\\d]+) from Stop:  ([\\S\\d]+)<br[^>]*> towards (.+?)<br");
 		rail_to = Pattern.compile("Take.+?<b>(.+?)</b> towards ([^<]+)<br", Pattern.DOTALL);
 		boat_to = Pattern.compile("Boat\\s+Thames Clipper towards ([^<]+)<br");
 		
 		strip_span = Pattern.compile("<span[^>]+>([^<]+)</span>");
-		transit_time = Pattern.compile("time:\\s(\\d+).+?mins", Pattern.DOTALL);
+		transit_time = Pattern.compile("(\\d+).+?mins", Pattern.DOTALL);
 		payonboard = Pattern.compile("<table cellspacing=\"0\".*?</table>");
 
 		fieldset = Pattern.compile("<fieldset(.*?)</fieldset>", Pattern.DOTALL);
@@ -85,6 +86,8 @@ public class JourneyPlannerParser
 		option = Pattern.compile("<option[^>]+>(.*?)</option>");
 			
 		tflerror = Pattern.compile("<p class=\"routealert-red-full\">([^<]+)</p>");
+
+		timeMatch = Pattern.compile("(\\d{2}):(\\d{2})");
 	
 	}
 
@@ -349,6 +352,14 @@ public class JourneyPlannerParser
 			{	
 				if (!end_of_journey)
 				{
+					while (tdlist.group(1).indexOf("javascript:mdvJpMaps")!=-1)
+					{
+						if (debug) {
+							System.out.print("Skipping: ");
+							System.out.println(tdlist.group(1));
+						}
+						tdlist.find();
+					}
 					if (debug)
 					{
 						System.out.print("Type: ");
@@ -418,13 +429,14 @@ public class JourneyPlannerParser
 							}
 							else
 							{
-								if (tdlist.group(1).indexOf(":")!=-1)
+								Matcher tm = timeMatch.matcher(tdlist.group(1));
+								if (tm.find())
 								{
 									Calendar ts = Calendar.getInstance();
 									ts.setTime(base.getTime());
-									int hour = normaliseHour(Integer.parseInt(tdlist.group(1).substring(0,2)), base);
+									int hour = normaliseHour(Integer.parseInt(tm.group(1)), base);
 									ts.set(Calendar.HOUR_OF_DAY, hour);
-									ts.set(Calendar.MINUTE, Integer.parseInt(tdlist.group(1).substring(3,5)));
+									ts.set(Calendar.MINUTE, Integer.parseInt(tm.group(2)));
 									j.last().time_end = ts.getTime();
 								}
 								end_of_journey = true;
@@ -481,6 +493,10 @@ public class JourneyPlannerParser
 										Route ro = new Route();
 										ro.thing = t2.group(1);
 										ro.towards = t2.group(2);
+										if (ro.towards.codePointAt(0) == 160) // non-breaking space
+										{
+											ro.towards = ro.towards.substring(1);
+										}
 										ro.stop = null;
 										js.routes.add(ro);
 									}
@@ -540,6 +556,12 @@ public class JourneyPlannerParser
 						}
 						case 2:
 						{
+							if (tdlist.group(1).indexOf("Pay before you board") != -1)
+							{
+								if (debug)
+									System.out.println("Skipping: "+ tdlist.group(1));
+								tdlist.find();
+							}
 							Matcher time = transit_time.matcher(tdlist.group(1));
 							time.find();
 							js.minutes = Integer.parseInt(time.group(1));
