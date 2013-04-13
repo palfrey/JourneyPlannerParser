@@ -67,7 +67,7 @@ public class JourneyPlannerParser
 		route = Pattern.compile("<table class=\"routedetails\">(.+?)</table>", Pattern.DOTALL);
 		tds = Pattern.compile("<td[^>]*?>(.*?)</td>", Pattern.DOTALL);
 		alt = Pattern.compile("alt=\"([^\"]+)\"");
-		motion = Pattern.compile("<strong>(?:Departing|Arriving):[^\n]+\n\\s+</strong>(\\S+)[^\n]*\n[^\n]*\n[^\\d]+(\\d+)[^\n]*\n\\s+(\\S+)\\s\n[^\n]*\n[^\\d]+(\\d+) at: (\\d+):(\\d+)</li>");
+		motion = Pattern.compile("<strong>(?:Leaving|Arriving)</strong> on \\S+ (\\d+) (\\S+) (\\d+) at (\\d+):(\\d+)");
 		strip_link = Pattern.compile("<a href=\"[^\"]+\">([^<]+)</a>");
 		walk_to = Pattern.compile("Walk to (.+?)<br", Pattern.DOTALL);
 		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+?<br /><br />)<span class=\"zoneinfo\">(?:Z|z)one\\(s\\): ([\\d, ]+)</span>", Pattern.DOTALL);
@@ -321,13 +321,13 @@ public class JourneyPlannerParser
 			throw new TFLRequestException(error.group(1));
 
 		Calendar base = new GregorianCalendar();
-		base.set(Calendar.DAY_OF_MONTH, Integer.parseInt(d.group(2)));
+		base.set(Calendar.DAY_OF_MONTH, Integer.parseInt(d.group(1)));
 		DateFormatSymbols dfs = new DateFormatSymbols();
 		
-		base.set(Calendar.MONTH, Arrays.asList(dfs.getMonths()).indexOf(d.group(3)));
-		base.set(Calendar.YEAR, Integer.parseInt(d.group(4)));
-		base.set(Calendar.HOUR_OF_DAY, Integer.parseInt(d.group(5)));
-		base.set(Calendar.MINUTE, Integer.parseInt(d.group(6)));
+		base.set(Calendar.MONTH, Arrays.asList(dfs.getShortMonths()).indexOf(d.group(2)));
+		base.set(Calendar.YEAR, Integer.parseInt(d.group(3)));
+		base.set(Calendar.HOUR_OF_DAY, Integer.parseInt(d.group(4)));
+		base.set(Calendar.MINUTE, Integer.parseInt(d.group(5)));
 		base.set(Calendar.SECOND, 0);
 		if (debug)
 			System.out.println(base.getTime());
