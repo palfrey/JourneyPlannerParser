@@ -474,7 +474,7 @@ public class JourneyPlannerParser
 									if (loc_end.indexOf("Stop:")!=-1)
 									{
 										Route ro = new Route();
-										ro.stop = loc_end.substring(loc_end.lastIndexOf("\t")).trim();
+										ro.stop = loc_end.substring(loc_end.lastIndexOf(" ")).trim();
 										js.routes.add(ro);
 										loc_end = loc_end.substring(0, loc_end.indexOf("Stop:")).trim();
 									}
