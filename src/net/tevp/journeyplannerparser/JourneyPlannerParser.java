@@ -17,10 +17,10 @@ public class JourneyPlannerParser
 			JourneyPlannerParser jpp = new JourneyPlannerParser(true);
 			Vector<Journey> j;
 			JourneyParameters jp = new JourneyParameters();
-			jp.when = new GregorianCalendar(2013, 4, 14, 11, 36).getTime();
+			jp.when = new GregorianCalendar(2013, 3, 14, 11, 36).getTime();
 			jp.speed = Speed.fast;
-			j = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
-			//j = jpp.doJourney(LocationType.Postcode.create("SE4 2DS"),LocationType.Postcode.create("BR3 1JD"), jp);
+			//j = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
+			j = jpp.doJourney(LocationType.Postcode.create("SE4 2DS"),LocationType.Postcode.create("BR3 1JD"), jp);
 			//j = jpp.doJourney(LocationType.Postcode.create("n19 3qn"),LocationType.Postcode.create("n19 3qn"), jp);
 			//js = jpp.doJourney(LocationType.Stop.create("Kings Cross"),LocationType.Postcode.create("E8 1JH"), jp);
 			for (int i=0;i<j.size();i++)
@@ -71,11 +71,11 @@ public class JourneyPlannerParser
 		motion = Pattern.compile("<strong>(?:Leaving|Arriving)</strong> on \\S+ (\\d+) (\\S+) (\\d+) at (\\d+):(\\d+)");
 		// Leaving</strong> on Sat 13 Apr 2013 at 10:32
 		strip_link = Pattern.compile("<a[^>]+href=\"[^\"]+\">([^<]+)</a>");
-		walk_to = Pattern.compile("Walk to (.+)", Pattern.DOTALL);
+		walk_to = Pattern.compile("Walk to ([^<]+)", Pattern.DOTALL);
 		tube_to = Pattern.compile("(?:T|t)ake(?: the )?(.+<br />)", Pattern.DOTALL);
 		tube_direct = Pattern.compile("<span class=\"[^\"]+\">([^<]+)</span> towards ([^\\s].+?)<br");
 		bus_to = Pattern.compile("Route (?:Express )?Bus ([A-Z\\d]+) from Stop:  ([\\S\\d]+)<br[^>]*> towards (.+?)<br");
-		replacement_bus_to = Pattern.compile("Stop:[^A-Z\\d]+([A-Z\\d]+)</a><br />Take[^R]+Route Replacement Bus ([A-Z\\d]+) towards ([^<]+)<br", Pattern.DOTALL);
+		replacement_bus_to = Pattern.compile("Take Route (.+?) towards ([^<]+)<br", Pattern.DOTALL);
 
 		rail_to = Pattern.compile("Take.+?<b>(.+?)</b> towards ([^<]+)<br", Pattern.DOTALL);
 		boat_to = Pattern.compile("Boat\\s+Thames Clipper towards ([^<]+)<br");
@@ -92,7 +92,6 @@ public class JourneyPlannerParser
 		tflerror = Pattern.compile("<p class=\"routealert-red-full\">([^<]+)</p>");
 
 		timeMatch = Pattern.compile("(\\d{2}):(\\d{2})");
-	
 	}
 
 	public Vector<Journey> doJourney(JourneyLocation start, JourneyLocation end, JourneyParameters params) throws ParseException
@@ -354,7 +353,7 @@ public class JourneyPlannerParser
 			boolean end_of_journey = false;
 			while (tdlist.find())
 			{	
-				if (!end_of_journey || type==1) // do an extra type 1 to get the end name
+				if (!end_of_journey || type==0) // do an extra type 0 to get the end name
 				{
 					while (tdlist.group(1).indexOf("javascript:mdvJpMaps")!=-1)
 					{
@@ -362,7 +361,8 @@ public class JourneyPlannerParser
 							System.out.print("Skipping: ");
 							System.out.println(tdlist.group(1));
 						}
-						tdlist.find();
+						if (!tdlist.find())
+							break;
 					}
 					if (debug)
 					{
@@ -477,6 +477,8 @@ public class JourneyPlannerParser
 								j.corrections();
 								break;
 							}
+							if (debug)
+								System.out.println("Type: " + js.type);
 							switch (js.type)
 							{
 								case Walk:
@@ -519,15 +521,15 @@ public class JourneyPlannerParser
 								case Bus:
 								{
 									Matcher b;
-									if (tdlist.group(1).indexOf("Replacement")!=-1)
+									if (tdlist.group(1).indexOf("replacement")!=-1)
 									{
 										b = replacement_bus_to.matcher(tdlist.group(1));
 										while (b.find())
 										{
 											Route ro = new Route();
-											ro.thing = b.group(2);
-											ro.stop = b.group(1);
-											ro.towards = b.group(3);
+											ro.thing = b.group(1);
+											ro.stop = null;
+											ro.towards = b.group(2);
 											js.routes.add(ro);
 										}
 									}
