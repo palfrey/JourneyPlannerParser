@@ -1,4 +1,4 @@
-SOURCE_FILES=$(wildcard src/net/tevp/journeyplannerparser/*.java)
+SOURCE_FILES=$(wildcard src/net/tevp/journeyplannerparser/*.java) src/android/os/Parcelable.java
 
 # This should be the Android SDK root directory
 ANDROID ?= ../../../android-sdk-linux_86
