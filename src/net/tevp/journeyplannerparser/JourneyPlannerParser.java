@@ -17,9 +17,10 @@ public class JourneyPlannerParser
 			JourneyPlannerParser jpp = new JourneyPlannerParser(true);
 			Vector<Journey> j;
 			JourneyParameters jp = new JourneyParameters();
-			jp.when = new GregorianCalendar(2013, 5, 10, 6, 23).getTime();
+			jp.when = new GregorianCalendar(2013, 4, 14, 11, 36).getTime();
 			jp.speed = Speed.fast;
-			j = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
+			//j = jpp.doJourney(LocationType.Postcode.create("E3 4AE"),LocationType.Postcode.create("SW7 2AZ"), jp);
+			j = jpp.doJourney(LocationType.Postcode.create("SE4 2DS"),LocationType.Postcode.create("BR3 1JD"), jp);
 			//j = jpp.doJourney(LocationType.Postcode.create("n19 3qn"),LocationType.Postcode.create("n19 3qn"), jp);
 			//js = jpp.doJourney(LocationType.Stop.create("Kings Cross"),LocationType.Postcode.create("E8 1JH"), jp);
 			for (int i=0;i<j.size();i++)
