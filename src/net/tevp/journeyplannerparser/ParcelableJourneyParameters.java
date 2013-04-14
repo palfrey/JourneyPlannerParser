@@ -29,7 +29,10 @@ public class ParcelableJourneyParameters extends JourneyParameters implements Pa
 		dest.writeString(speed.name());
 		dest.writeString(timeType.name());
 		dest.writeString(routeType.name());
-		dest.writeParcelable(new ParcelableJourneyLocation(via), flags);
+		if (via == null)
+			dest.writeParcelable(new ParcelableJourneyLocation(), flags);
+		else
+			dest.writeParcelable(new ParcelableJourneyLocation(via), flags);
 		dest.writeBooleanArray(new boolean[] {useRail, useDLR, useTube, useTram, useBus, useCoach, useRiver});
 	}
 

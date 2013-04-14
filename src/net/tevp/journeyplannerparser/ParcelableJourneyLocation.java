@@ -14,11 +14,19 @@ public class ParcelableJourneyLocation extends JourneyLocation implements Parcel
 	{
 		super(jl.type, jl.data);
 	}
+
+	ParcelableJourneyLocation()
+	{
+		super(null, null);
+	}
 	
 	@Override
 	public void writeToParcel (Parcel dest, int flags)
 	{
-		dest.writeString(type.name());
+		if (type == null)
+			dest.writeString("");
+		else
+			dest.writeString(type.name());
 		dest.writeString(data);
 	}
 
@@ -27,7 +35,11 @@ public class ParcelableJourneyLocation extends JourneyLocation implements Parcel
 
 	public static final Parcelable.Creator<JourneyLocation> CREATOR = new Parcelable.Creator<JourneyLocation>() {
         public JourneyLocation createFromParcel(Parcel in) {
-            return new JourneyLocation(Enum.valueOf(LocationType.class, in.readString()), in.readString());
+			String lt = in.readString();
+			String data = in.readString();
+			if (lt.length() == 0)
+            	return new JourneyLocation(null, null);
+            return new JourneyLocation(Enum.valueOf(LocationType.class, lt), data);
         }
 
         public JourneyLocation[] newArray(int size) {

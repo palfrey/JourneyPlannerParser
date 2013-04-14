@@ -27,8 +27,9 @@ public class ParcelableJourneyQuery extends JourneyQuery implements Parcelable
     public static final Parcelable.Creator<JourneyQuery> CREATOR = new Parcelable.Creator<JourneyQuery>() {
         public JourneyQuery createFromParcel(Parcel in) {
             JourneyQuery jq = new JourneyQuery();
-			ClassLoader cl = JourneyLocation.class.getClassLoader();
-			jq.start = in.readParcelable(cl);
+			ClassLoader cl = ParcelableJourneyLocation.class.getClassLoader();
+			ParcelableJourneyLocation pjl = in.readParcelable(cl);
+			jq.start = pjl;
 			jq.end = in.readParcelable(cl);
 			jq.params = in.readParcelable(cl);
 			return jq;
